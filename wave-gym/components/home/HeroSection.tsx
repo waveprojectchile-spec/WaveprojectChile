@@ -1,33 +1,12 @@
 'use client';
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
 import { ShoppingCart, ArrowRight, Lock, Zap } from 'lucide-react';
 import ParticleCanvas from '@/components/ui/ParticleCanvas';
 import { useRealtimeCupos } from '@/hooks/useRealtimeCupos';
 
-/* ── Logo SVG inline (ola en círculo) ── */
-function WaveLogo({ size = 56 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
-      <circle cx="50" cy="50" r="47" stroke="white" strokeWidth="3"/>
-      {/* Ola principal */}
-      <path
-        d="M15 58 C22 42 30 36 40 44 C50 52 58 46 68 30"
-        stroke="white" strokeWidth="4" strokeLinecap="round" fill="none"
-      />
-      {/* Ola secundaria / base */}
-      <path
-        d="M15 68 C25 54 34 50 44 56 C54 62 62 58 72 44 C78 36 82 32 88 28"
-        stroke="white" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.55"
-      />
-      {/* Punto de origen */}
-      <path
-        d="M14 72 C18 65 22 63 26 65"
-        stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.4"
-      />
-    </svg>
-  );
-}
+
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,10 +42,10 @@ export default function HeroSection() {
           background: 'radial-gradient(ellipse 120% 80% at 70% 40%, rgba(180,100,10,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 30% 60%, rgba(201,168,76,0.08) 0%, transparent 50%)'
         }} />
         {/* Capas de overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/95 via-[#050505]/70 to-[#050505]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/40 via-[#050505]/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/30 via-transparent to-transparent" />
         {/* Vignette lateral derecha */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-[#050505]/60 to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-[#050505]/10 to-transparent" />
       </motion.div>
 
       {/* Partículas */}
@@ -207,7 +186,13 @@ export default function HeroSection() {
             transition={{ delay: 0.4, duration: 1.2, ease: 'easeOut' }}
             className="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none"
           >
-            <WaveLogo size={420} />
+            <Image
+              src="/logo png.png"
+              alt="Wave Project Gym"
+              width={420}
+              height={420}
+              className="object-contain opacity-40"
+            />
           </motion.div>
 
           {/* Card cupos */}

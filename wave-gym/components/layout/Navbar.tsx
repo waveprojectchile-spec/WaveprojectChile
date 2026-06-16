@@ -217,30 +217,16 @@ export default function Navbar() {
           <div className="max-w-[1440px] mx-auto flex items-center justify-between px-5 md:px-8 lg:px-12 h-[70px]">
 
             {/* LOGO */}
-            <a href="#inicio" id="nav-logo" className="flex items-center gap-3 group flex-shrink-0">
-              <div className="relative w-[42px] h-[42px]">
-                {/* Glow dorado en hover */}
-                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-                     style={{ boxShadow: '0 0 20px rgba(201,168,76,0.3)' }} />
+            <a href="#inicio" id="nav-logo" className="flex items-center group flex-shrink-0">
+              <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                 <Image
-                  src="/LOGO.PNG"
+                  src="/logo png.png"
                   alt="Wave Project Gym"
-                  width={42}
-                  height={42}
-                  className="object-contain w-full h-full relative z-10"
-                  style={{ filter: 'invert(1) brightness(10)' }}
+                  width={65}
+                  height={65}
+                  className="object-contain relative z-10"
                   priority
                 />
-              </div>
-              <div className="flex flex-col leading-none gap-0.5">
-                <span className="text-white group-hover:text-[#C9A84C] transition-colors duration-300"
-                      style={{ fontFamily: BC, fontWeight: 900, fontSize: '16px', letterSpacing: '0.14em' }}>
-                  WAVE PROJECT
-                </span>
-                <span className="text-[#3A3A3A] group-hover:text-[#C9A84C]/40 transition-colors duration-300"
-                      style={{ fontFamily: BC, fontWeight: 600, fontSize: '9px', letterSpacing: '0.45em' }}>
-                  — GYM —
-                </span>
               </div>
             </a>
 
@@ -366,19 +352,14 @@ export default function Navbar() {
             >
               {/* Header drawer */}
               <div className="flex items-center justify-between h-[70px] px-6 border-b border-white/[0.06]">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center mt-2">
                   <Image
-                    src="/LOGO.PNG"
+                    src="/logo png.png"
                     alt="Wave Project Gym"
-                    width={30}
-                    height={30}
+                    width={70}
+                    height={70}
                     className="object-contain"
-                    style={{ filter: 'invert(1) brightness(10)' }}
                   />
-                  <span className="text-white"
-                        style={{ fontFamily: BC, fontWeight: 900, fontSize: '13px', letterSpacing: '0.15em' }}>
-                    WAVE PROJECT GYM
-                  </span>
                 </div>
                 <button
                   type="button"
