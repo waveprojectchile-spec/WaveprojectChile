@@ -187,7 +187,7 @@ export default function HeroSection() {
             className="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none"
           >
             <Image
-              src="/logo png.png"
+              src="/LOGO PNG.png"
               alt="Wave Project Gym"
               width={420}
               height={420}

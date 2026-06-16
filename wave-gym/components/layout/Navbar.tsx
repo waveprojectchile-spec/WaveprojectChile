@@ -220,7 +220,7 @@ export default function Navbar() {
             <a href="#inicio" id="nav-logo" className="flex items-center group flex-shrink-0">
               <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                 <Image
-                  src="/logo png.png"
+                  src="/LOGO PNG.png"
                   alt="Wave Project Gym"
                   width={65}
                   height={65}
@@ -354,7 +354,7 @@ export default function Navbar() {
               <div className="flex items-center justify-between h-[70px] px-6 border-b border-white/[0.06]">
                 <div className="flex items-center justify-center mt-2">
                   <Image
-                    src="/logo png.png"
+                    src="/LOGO PNG.png"
                     alt="Wave Project Gym"
                     width={70}
                     height={70}
