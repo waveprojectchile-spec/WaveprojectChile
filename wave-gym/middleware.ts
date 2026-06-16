@@ -34,8 +34,15 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const pathname = request.nextUrl.pathname
+
+  // Dejar pasar siempre las rutas de auth (signout, etc.) sin interceptar
+  if (pathname.startsWith('/auth/')) {
+    return supabaseResponse
+  }
+
   // Rutas que requieren sesión
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/mi-cuenta')
+  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/mi-cuenta')
 
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
@@ -44,7 +51,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Si ya tiene sesión, evitar que entre al login o registro
-  if ((request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/registro')) && user) {
+  if ((pathname.startsWith('/login') || pathname.startsWith('/registro')) && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/mi-cuenta'
     return NextResponse.redirect(url)
