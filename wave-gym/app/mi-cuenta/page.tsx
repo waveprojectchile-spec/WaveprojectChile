@@ -44,6 +44,7 @@ export default async function MiCuentaPage() {
 
   async function iniciarPago(formData: FormData) {
     'use server'
+    let redirectUrl = ''
     try {
       const { cookies } = await import('next/headers')
       const cookieStore = cookies()
@@ -58,9 +59,9 @@ export default async function MiCuentaPage() {
           'Cookie': cookieHeader
         },
         body: JSON.stringify({ 
-          plan: profile.plan, 
+          plan: profile?.plan, 
           monto: monto, 
-          titulo: profile.plan?.toUpperCase() || profile.plan
+          titulo: profile?.plan?.toUpperCase() || profile?.plan
         }),
       })
 
@@ -68,11 +69,15 @@ export default async function MiCuentaPage() {
       console.log('[MI-CUENTA] Respuesta checkout:', data)
       
       if (data.init_point) {
-        const { redirect } = await import('next/navigation')
-        redirect(data.init_point)
+        redirectUrl = data.init_point
       }
     } catch (error) {
       console.error('[MI-CUENTA] Error al iniciar pago:', error)
+    }
+
+    if (redirectUrl) {
+      const { redirect } = await import('next/navigation')
+      redirect(redirectUrl)
     }
   }
 
