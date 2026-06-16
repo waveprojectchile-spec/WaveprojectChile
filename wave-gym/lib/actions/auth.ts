@@ -1,110 +1,68 @@
 'use server'
-
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-
-  if (!email || !password) {
-    return { error: 'Correo y contraseña son requeridos' }
-  }
-
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
-  const { error, data } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (error) {
-    return { error: 'Credenciales inválidas' }
+  if (error || !data.user) {
+    return { error: 'Credenciales incorrectas' }
   }
 
-  console.log('SERVICE KEY existe:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
-  console.log('User ID:', data.user.id)
-
-  // Cliente con permisos totales para leer roles
-  const supabaseAdmin = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  // Después del login exitoso:
   const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('role')
     .eq('id', data.user.id)
     .single()
 
-  console.log('Profile:', JSON.stringify(profile))
-
+  // CRÍTICO: redirect() FUERA de try/catch
   if (profile?.role === 'admin') redirect('/dashboard')
-  else redirect('/mi-cuenta')
+  redirect('/mi-cuenta')
 }
 
 export async function registerAction(formData: FormData) {
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const nombre = formData.get('nombre') as string
   const rut = formData.get('rut') as string
-  const fecha_nacimiento = formData.get('fecha_nacimiento') as string
   const telefono = formData.get('telefono') as string
+  const fecha_nacimiento = formData.get('fecha_nacimiento') as string
   const plan = formData.get('plan') as string
   const direccion = formData.get('direccion') as string
   const ciudad = formData.get('ciudad') as string
   const region = formData.get('region') as string
   const codigo_postal = formData.get('codigo_postal') as string
-  
-  // Condicionales booleanos
-  const enfermedades_cronicas = formData.get('enfermedades_cronicas') === 'on'
-  const operaciones = formData.get('operaciones') === 'on'
-  const medicamentos = formData.get('medicamentos') === 'on'
-  const lesiones = formData.get('lesiones') === 'on'
+  const enfermedades = (formData.get('enfermedades') as string) || null
+  const operaciones = (formData.get('operaciones') as string) || null
+  const medicamentos = (formData.get('medicamentos') as string) || null
+  const lesiones = (formData.get('lesiones') as string) || null
 
-  if (!email || !password || !nombre || !rut) {
-    return { error: 'Faltan campos obligatorios' }
-  }
+  const birthDate = new Date(fecha_nacimiento)
+  const edad = Math.floor(
+    (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+  )
 
-  // 1. Crear usuario en Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
+  const { data, error } = await supabase.auth.signUp({ email, password })
+  if (error || !data.user) return { error: error?.message || 'Error al crear usuario' }
+
+  await supabaseAdmin.from('profiles').insert({
+    id: data.user.id,
+    role: 'cliente',
+    nombre, rut, telefono, fecha_nacimiento, edad,
+    plan, direccion, ciudad, region, codigo_postal,
+    enfermedades, operaciones, medicamentos, lesiones,
+    estado_pago: 'pendiente',
   })
 
-  if (authError || !authData.user) {
-    return { error: authError?.message || 'Error al crear usuario' }
-  }
-
-  // 2. Insertar en perfiles
-  const { error: profileError } = await supabase.from('profiles').insert([
-    {
-      id: authData.user.id,
-      role: 'cliente',
-      nombre,
-      rut,
-      email, // guardado en auth y en profiles para fácil acceso
-      fecha_nacimiento,
-      telefono,
-      plan,
-      direccion,
-      ciudad,
-      region,
-      codigo_postal,
-      enfermedades_cronicas,
-      operaciones,
-      medicamentos,
-      lesiones
-    }
-  ])
-
-  if (profileError) {
-    return { error: 'Error al guardar el perfil: ' + profileError.message }
-  }
-
-  redirect('/login?registered=true')
+  redirect('/confirmar-email')
 }

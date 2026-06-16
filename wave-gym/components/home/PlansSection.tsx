@@ -3,6 +3,12 @@ import { motion } from 'framer-motion';
 import { Check, Star, Lock, Zap } from 'lucide-react';
 import { useRealtimeCupos } from '@/hooks/useRealtimeCupos';
 import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const planes = [
   {
@@ -54,13 +60,30 @@ export default function PlansSection() {
   const handleCheckout = async (plan: any) => {
     try {
       setLoadingPlan(plan.id);
+
+      // Try to get session for user metadata
+      let userId: string | null = null;
+      let userEmail = '';
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const sb = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+        const { data: { session } } = await sb.auth.getSession();
+        userId = session?.user?.id || null;
+        userEmail = session?.user?.email || '';
+      } catch {}
+
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan: plan.id,
           monto: plan.precio,
-          titulo: plan.nombre
+          titulo: plan.nombre,
+          user_id: userId,
+          email: userEmail,
         })
       });
       const data = await res.json();

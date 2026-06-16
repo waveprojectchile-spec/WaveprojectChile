@@ -45,31 +45,8 @@ export async function middleware(request: NextRequest) {
 
   // Si ya tiene sesión, evitar que entre al login o registro
   if ((request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/registro')) && user) {
-    let role = 'cliente'
-    
-    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      const supabaseAdmin = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-      )
-      
-      const { data: profile } = await supabaseAdmin
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-        
-      if (profile) {
-        role = profile.role
-      }
-    }
-
     const url = request.nextUrl.clone()
-    if (role === 'admin') {
-      url.pathname = '/dashboard'
-    } else {
-      url.pathname = '/mi-cuenta'
-    }
+    url.pathname = '/mi-cuenta'
     return NextResponse.redirect(url)
   }
 
