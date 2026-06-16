@@ -24,6 +24,7 @@ export async function loginAction(formData: FormData) {
   }
 
   let userRole = 'cliente'
+  let profileData = null
   
   try {
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -47,12 +48,19 @@ export async function loginAction(formData: FormData) {
       console.error('Error al obtener perfil:', profileError)
     } else {
       userRole = profile?.role || 'cliente'
+      profileData = profile
       console.log('Profile encontrado:', profile)
     }
   } catch (err: any) {
     console.error('Error en Supabase Admin:', err.message)
     return { error: 'Error interno del servidor (ver logs)' }
   }
+
+  console.log('=== AUTH DEBUG ===')
+  console.log('User ID:', data.user.id)
+  console.log('Profile data:', JSON.stringify(profileData))
+  console.log('Role detectado:', userRole)
+  console.log('==================')
 
   if (userRole === 'admin') {
     redirect('/dashboard')
