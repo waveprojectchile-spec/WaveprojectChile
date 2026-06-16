@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const REGIONES = ['Arica y Parinacota','Tarapacá','Antofagasta','Atacama','Coquimbo','Valparaíso','Metropolitana','O\'Higgins','Maule','Ñuble','Biobío','La Araucanía','Los Ríos','Los Lagos','Aysén','Magallanes']
 
 const PLANES = [
-  { id: 'mensual', nombre: 'MENSUAL', precio: 32990 },
+  { id: 'mensual', nombre: 'MENSUAL (PRUEBA)', precio: 10 },
   { id: 'trimestral', nombre: 'TRIMESTRAL', precio: 98970 },
   { id: 'semestral', nombre: 'SEMESTRAL', precio: 197940 },
   { id: 'anual', nombre: 'ANUAL', precio: 395880 }
