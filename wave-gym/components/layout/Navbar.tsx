@@ -1,113 +1,128 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Menu, X, ShoppingCart, ChevronDown, Globe } from 'lucide-react';
+import { Menu, X, ShoppingCart, ChevronDown, Globe, MapPin } from 'lucide-react';
 
 /* ─────────────────────────────────────────
-   LOGO — imagen real LOGO.PNG
-   Invertida a blanco con CSS filter
+   TIPOS DE IDIOMA
 ───────────────────────────────────────── */
-function WaveProjectLogo({ size = 36 }: { size?: number }) {
-  return (
-    <Image
-      src="/LOGO.PNG"
-      alt="Wave Project Gym Logo"
-      width={size}
-      height={size}
-      className="object-contain"
-      style={{ filter: 'invert(1) brightness(2)' }}
-      priority
-    />
-  );
-}
+export type Lang = 'ES' | 'EN' | 'PT';
 
-/* ─────────────────────────────────────────
-   IDIOMAS
-───────────────────────────────────────── */
-type Lang = 'ES' | 'EN' | 'PT';
-
-const LANGS: { code: Lang; label: string; flag: string }[] = [
-  { code: 'ES', label: 'Español',   flag: '🇨🇱' },
-  { code: 'EN', label: 'English',   flag: '🇺🇸' },
-  { code: 'PT', label: 'Português', flag: '🇧🇷' },
+const LANGS = [
+  { code: 'ES' as Lang, label: 'Español',   flag: '🇨🇱', short: 'ES' },
+  { code: 'EN' as Lang, label: 'English',   flag: '🇺🇸', short: 'EN' },
+  { code: 'PT' as Lang, label: 'Português', flag: '🇧🇷', short: 'PT' },
 ];
 
-const NAV_LABELS: Record<Lang, { links: string[]; cta: string }> = {
-  ES: { links: ['INICIO', 'PLANES', 'BENEFICIOS', 'FAQ', 'CONTACTO'], cta: 'COMPRAR PREVENTA' },
-  EN: { links: ['HOME',   'PLANS',  'BENEFITS',   'FAQ', 'CONTACT'],  cta: 'BUY PRE-SALE' },
-  PT: { links: ['INÍCIO', 'PLANOS', 'BENEFÍCIOS', 'FAQ', 'CONTATO'],  cta: 'COMPRAR PRÉ-VENDA' },
+const NAV_CONTENT: Record<Lang, { links: { label: string; href: string }[]; cta: string; pretitle: string }> = {
+  ES: {
+    pretitle: '1ª PREVENTA OFICIAL',
+    cta: 'COMPRAR PREVENTA',
+    links: [
+      { label: 'INICIO',      href: '#inicio' },
+      { label: 'PLANES',      href: '#planes' },
+      { label: 'BENEFICIOS',  href: '#beneficios' },
+      { label: 'FAQ',         href: '#faq' },
+      { label: 'CONTACTO',    href: '#contacto' },
+    ],
+  },
+  EN: {
+    pretitle: '1st OFFICIAL PRE-SALE',
+    cta: 'BUY PRE-SALE',
+    links: [
+      { label: 'HOME',      href: '#inicio' },
+      { label: 'PLANS',     href: '#planes' },
+      { label: 'BENEFITS',  href: '#beneficios' },
+      { label: 'FAQ',       href: '#faq' },
+      { label: 'CONTACT',   href: '#contacto' },
+    ],
+  },
+  PT: {
+    pretitle: '1ª PRÉ-VENDA OFICIAL',
+    cta: 'COMPRAR PRÉ-VENDA',
+    links: [
+      { label: 'INÍCIO',    href: '#inicio' },
+      { label: 'PLANOS',    href: '#planes' },
+      { label: 'BENEFÍCIOS',href: '#beneficios' },
+      { label: 'FAQ',       href: '#faq' },
+      { label: 'CONTATO',   href: '#contacto' },
+    ],
+  },
 };
 
-const NAV_HREFS = ['#inicio', '#planes', '#beneficios', '#faq', '#contacto'];
-
 /* ─────────────────────────────────────────
-   COMPONENTE SELECTOR DE IDIOMA
+   SELECTOR DE IDIOMA
 ───────────────────────────────────────── */
 function LangSelector({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const current = LANGS.find(l => l.code === lang)!;
 
+  // Cerrar al hacer click afuera
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [open]);
 
   return (
-    <div ref={ref} className="relative" id="lang-selector">
+    <div ref={ref} className="relative select-none" id="lang-selector">
+      {/* Trigger */}
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 h-8 px-3 border border-white/10 hover:border-[#C9A84C]/50 transition-all duration-200 group"
-        aria-label="Seleccionar idioma"
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="flex items-center gap-2 px-3 py-2 rounded border border-white/10 bg-white/3 hover:border-[#C9A84C]/60 hover:bg-[#C9A84C]/5 transition-all duration-200 cursor-pointer"
       >
-        <Globe size={11} className="text-[#555] group-hover:text-[#C9A84C] transition-colors" />
-        <span className="font-barlow font-700 text-[11px] text-[#777] group-hover:text-white tracking-widest transition-colors">
-          {current.code}
+        <Globe size={12} className="text-[#C9A84C]" />
+        <span className="text-white text-[11px] font-semibold tracking-widest"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+          {current.short}
         </span>
-        <ChevronDown
-          size={10}
-          className={`text-[#444] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
+        <ChevronDown size={10} className={`text-[#777] transition-transform duration-200 ${open ? '-rotate-180' : ''}`} />
       </button>
 
+      {/* Dropdown */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.18 }}
-            className="absolute right-0 top-full mt-1 w-40 bg-[#0C0C0C] border border-white/8 z-50 shadow-2xl"
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            role="listbox"
+            className="absolute right-0 top-[calc(100%+6px)] z-[100] w-44 rounded overflow-hidden border border-white/10 bg-[#0C0C0C] shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
           >
-            {LANGS.map(l => (
-              <button
-                key={l.code}
-                id={`lang-${l.code.toLowerCase()}`}
-                onClick={() => { setLang(l.code); setOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 group ${
-                  lang === l.code
-                    ? 'bg-[rgba(201,168,76,0.08)] text-[#C9A84C]'
-                    : 'text-[#555] hover:bg-white/3 hover:text-white'
-                }`}
-              >
-                <span className="text-base leading-none">{l.flag}</span>
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-barlow font-bold text-[11px] tracking-widest uppercase leading-none">
-                    {l.code}
-                  </span>
-                  <span className="font-body text-[9px] text-[#444] group-hover:text-[#666] leading-none">
+            {LANGS.map(l => {
+              const active = lang === l.code;
+              return (
+                <button
+                  key={l.code}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  id={`lang-opt-${l.code.toLowerCase()}`}
+                  onClick={() => { setLang(l.code); setOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors duration-150 ${
+                    active
+                      ? 'bg-[#C9A84C]/10 text-[#C9A84C]'
+                      : 'text-[#888] hover:bg-white/4 hover:text-white'
+                  }`}
+                >
+                  <span className="text-lg leading-none">{l.flag}</span>
+                  <span className="flex-1 text-left"
+                        style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '12px', letterSpacing: '0.1em' }}>
                     {l.label}
                   </span>
-                </div>
-                {lang === l.code && (
-                  <div className="ml-auto w-1 h-1 rounded-full bg-[#C9A84C]" />
-                )}
-              </button>
-            ))}
+                  {active && <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />}
+                </button>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
@@ -119,249 +134,311 @@ function LangSelector({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => voi
    NAVBAR PRINCIPAL
 ───────────────────────────────────────── */
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [lang, setLang]           = useState<Lang>('ES');
-  const [activeSection, setActive] = useState('');
+  const [scrolled, setScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [lang, setLang] = useState<Lang>('ES');
+  const [activeHref, setActiveHref] = useState('');
 
-  const labels = NAV_LABELS[lang];
+  const content = NAV_CONTENT[lang];
 
+  /* Scroll listener */
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 50);
+    const handler = () => {
+      setScrolled(window.scrollY > 40);
       // Detectar sección activa
-      const sections = NAV_HREFS.map(h => document.querySelector(h));
-      let current = '';
-      sections.forEach((s, i) => {
-        if (s) {
-          const rect = s.getBoundingClientRect();
-          if (rect.top <= 120) current = NAV_HREFS[i];
+      const sections = content.links.map(l => ({ href: l.href, el: document.querySelector(l.href) }));
+      let active = '';
+      for (const { href, el } of sections) {
+        if (el) {
+          const { top } = el.getBoundingClientRect();
+          if (top <= 100) active = href;
         }
-      });
-      setActive(current);
+      }
+      setActiveHref(active);
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    window.addEventListener('scroll', handler, { passive: true });
+    handler();
+    return () => window.removeEventListener('scroll', handler);
+  }, [content.links]);
+
+  /* Bloquear scroll body cuando drawer está abierto */
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
+
+  const BC = "'Barlow Condensed', sans-serif";
 
   return (
     <>
-      {/* ════════════════════════════════════
-          BARRA SUPERIOR (pre-nav) — sutil
-      ════════════════════════════════════ */}
-      <div className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled ? 'h-0 overflow-hidden opacity-0' : 'opacity-100'
-      }`}>
-        <div className="border-b border-white/4 bg-[#030303]/80 backdrop-blur-sm flex items-center justify-between px-6 md:px-12 lg:px-16 h-8">
-          <div className="flex items-center gap-4">
-            <span className="font-barlow text-[10px] text-[#333] tracking-widest uppercase">
-              🏋️ Calle 6 235, Concón, Chile
+      {/* ══════════════════════════════════════
+          TOPBAR — info contextual (se oculta al scroll)
+      ══════════════════════════════════════ */}
+      <div
+        className="fixed inset-x-0 top-0 z-[60] transition-all duration-500 overflow-hidden"
+        style={{ height: scrolled ? 0 : '32px', opacity: scrolled ? 0 : 1 }}
+      >
+        <div className="h-8 bg-[#030303] border-b border-white/[0.04] flex items-center justify-between px-5 md:px-10">
+          <div className="flex items-center gap-1.5 text-[#3A3A3A]">
+            <MapPin size={9} />
+            <span style={{ fontFamily: BC, fontWeight: 600, fontSize: '10px', letterSpacing: '0.15em' }}>
+              CALLE 6 235, CONCÓN, CHILE
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-5">
             <a href="https://www.instagram.com/waveprojectgym" target="_blank" rel="noopener noreferrer"
-               className="font-barlow text-[10px] text-[#333] hover:text-[#C9A84C] tracking-widest uppercase transition-colors">
-              @waveprojectgym
+               className="text-[#3A3A3A] hover:text-[#C9A84C] transition-colors duration-200"
+               style={{ fontFamily: BC, fontWeight: 600, fontSize: '10px', letterSpacing: '0.15em' }}>
+              @WAVEPROJECTGYM
             </a>
-            <div className="w-px h-3 bg-[#222]" />
-            <span className="font-barlow text-[10px] text-[#C9A84C] tracking-widest animate-pulse uppercase">
-              ● 50 CUPOS · PREVENTA 2025
+            <div className="w-px h-3 bg-white/[0.06]" />
+            <span className="text-[#C9A84C] flex items-center gap-1.5"
+                  style={{ fontFamily: BC, fontWeight: 700, fontSize: '10px', letterSpacing: '0.15em' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] animate-pulse" />
+              50 CUPOS · PREVENTA 2025
             </span>
           </div>
         </div>
       </div>
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           NAVBAR PRINCIPAL
-      ════════════════════════════════════ */}
-      <nav
+      ══════════════════════════════════════ */}
+      <header
         id="navbar"
-        className={`fixed inset-x-0 z-50 transition-all duration-500 ${
-          scrolled ? 'top-0' : 'top-8'
-        } ${
-          scrolled
-            ? 'bg-[#050505]/95 backdrop-blur-xl border-b border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.8)]'
-            : 'bg-transparent'
-        }`}
+        className="fixed inset-x-0 z-50 transition-all duration-500"
+        style={{ top: scrolled ? 0 : '32px' }}
       >
-        <div className="max-w-[1500px] mx-auto px-5 md:px-10 lg:px-14 flex items-center justify-between h-16 md:h-[72px]">
+        <div className={`transition-all duration-500 border-b ${
+          scrolled
+            ? 'bg-[#050505]/96 backdrop-blur-xl border-white/[0.06] shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
+            : 'bg-transparent border-transparent'
+        }`}>
+          <div className="max-w-[1440px] mx-auto flex items-center justify-between px-5 md:px-8 lg:px-12 h-[70px]">
 
-          {/* ── LOGO ── */}
-          <a href="#inicio" id="nav-logo" className="group flex items-center gap-3 flex-shrink-0">
-            {/* Ícono SVG */}
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-[#C9A84C]/10 scale-0 group-hover:scale-150 transition-transform duration-500" />
-              <WaveProjectLogo size={38} />
-            </div>
-
-            {/* Texto del logo */}
-            <div className="flex flex-col leading-none">
-              <span
-                className="text-white font-barlow font-black tracking-wider group-hover:text-[#C9A84C] transition-colors duration-300"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '15px', letterSpacing: '0.12em' }}
-              >
-                WAVE PROJECT
-              </span>
-              <span
-                className="text-[#555] tracking-[0.35em] group-hover:text-[#C9A84C]/60 transition-colors duration-300"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '8px', letterSpacing: '0.38em' }}
-              >
-                ─ GYM ─
-              </span>
-            </div>
-          </a>
-
-          {/* ── LINKS DESKTOP ── */}
-          <ul className="hidden lg:flex items-center">
-            {labels.links.map((label, i) => {
-              const href = NAV_HREFS[i];
-              const isActive = activeSection === href;
-              return (
-                <li key={href} className="relative group">
-                  <a
-                    href={href}
-                    className={`relative flex items-center h-[72px] px-4 xl:px-5 transition-all duration-200 ${
-                      isActive ? 'text-[#C9A84C]' : 'text-[#555] hover:text-white'
-                    }`}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em' }}
-                  >
-                    {label}
-                    {/* Underline indicator */}
-                    <span className={`absolute bottom-0 left-4 xl:left-5 right-4 xl:right-5 h-[2px] bg-[#C9A84C] transition-all duration-300 ${
-                      isActive ? 'opacity-100 scaleX-100' : 'opacity-0 scale-x-0 group-hover:opacity-50 group-hover:scale-x-100'
-                    }`} style={{ transformOrigin: 'left' }} />
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* ── DERECHA: Lang + CTA ── */}
-          <div className="flex items-center gap-3">
-            {/* Selector de idioma */}
-            <div className="hidden md:block">
-              <LangSelector lang={lang} setLang={setLang} />
-            </div>
-
-            {/* Separador vertical */}
-            <div className="hidden md:block w-px h-6 bg-white/8" />
-
-            {/* CTA comprar */}
-            <a
-              href="#planes"
-              id="nav-cta"
-              className="hidden md:flex items-center gap-2 transition-all duration-300 relative overflow-hidden group"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontWeight: 800,
-                fontSize: '11px',
-                letterSpacing: '0.15em',
-                background: 'linear-gradient(135deg, #C9A84C, #F5C842)',
-                color: '#050505',
-                padding: '10px 20px',
-              }}
-            >
-              {/* Shine effect */}
-              <span className="absolute inset-0 w-0 bg-white/20 group-hover:w-full transition-all duration-500 skew-x-12" />
-              <ShoppingCart size={13} />
-              <span className="relative">{labels.cta}</span>
+            {/* LOGO */}
+            <a href="#inicio" id="nav-logo" className="flex items-center gap-3 group flex-shrink-0">
+              <div className="relative w-[42px] h-[42px]">
+                {/* Glow dorado en hover */}
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                     style={{ boxShadow: '0 0 20px rgba(201,168,76,0.3)' }} />
+                <Image
+                  src="/LOGO.PNG"
+                  alt="Wave Project Gym"
+                  width={42}
+                  height={42}
+                  className="object-contain w-full h-full relative z-10"
+                  style={{ filter: 'invert(1) brightness(10)' }}
+                  priority
+                />
+              </div>
+              <div className="flex flex-col leading-none gap-0.5">
+                <span className="text-white group-hover:text-[#C9A84C] transition-colors duration-300"
+                      style={{ fontFamily: BC, fontWeight: 900, fontSize: '16px', letterSpacing: '0.14em' }}>
+                  WAVE PROJECT
+                </span>
+                <span className="text-[#3A3A3A] group-hover:text-[#C9A84C]/40 transition-colors duration-300"
+                      style={{ fontFamily: BC, fontWeight: 600, fontSize: '9px', letterSpacing: '0.45em' }}>
+                  — GYM —
+                </span>
+              </div>
             </a>
 
-            {/* Mobile toggle */}
-            <button
-              id="nav-mobile-toggle"
-              className="lg:hidden flex items-center justify-center w-9 h-9 border border-white/10 text-[#777] hover:text-white hover:border-[#C9A84C]/40 transition-all duration-200"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Menú"
-            >
-              {menuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
+            {/* NAV LINKS — solo desktop */}
+            <nav className="hidden lg:flex items-stretch h-full">
+              {content.links.map(link => {
+                const isActive = activeHref === link.href;
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="relative flex items-center px-5 h-[70px] transition-colors duration-200 group"
+                    style={{
+                      fontFamily: BC,
+                      fontWeight: 700,
+                      fontSize: '12px',
+                      letterSpacing: '0.2em',
+                      color: isActive ? '#C9A84C' : '#888',
+                    }}
+                    onMouseEnter={e => { if (!isActive) (e.target as HTMLElement).style.color = '#fff'; }}
+                    onMouseLeave={e => { if (!isActive) (e.target as HTMLElement).style.color = '#888'; }}
+                  >
+                    {link.label}
+                    {/* Barra activa */}
+                    <span
+                      className="absolute bottom-0 left-5 right-5 h-[2px] bg-[#C9A84C] transition-all duration-300 origin-left"
+                      style={{
+                        transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
+                        opacity: isActive ? 1 : 0,
+                      }}
+                    />
+                    {/* Hover hint */}
+                    <span
+                      className="absolute bottom-0 left-5 right-5 h-[1px] bg-white/10 transition-all duration-300 origin-left group-hover:scale-x-100"
+                      style={{ transform: isActive ? 'scaleX(0)' : undefined }}
+                    />
+                  </a>
+                );
+              })}
+            </nav>
+
+            {/* DERECHA: idioma + CTA + hamburger */}
+            <div className="flex items-center gap-3">
+
+              {/* Selector idioma desktop */}
+              <div className="hidden md:block">
+                <LangSelector lang={lang} setLang={setLang} />
+              </div>
+
+              <div className="hidden md:block w-px h-5 bg-white/[0.06]" />
+
+              {/* CTA Comprar */}
+              <a
+                href="#planes"
+                id="nav-cta"
+                className="hidden md:flex items-center gap-2 relative overflow-hidden group"
+                style={{
+                  fontFamily: BC,
+                  fontWeight: 800,
+                  fontSize: '11px',
+                  letterSpacing: '0.18em',
+                  background: 'linear-gradient(120deg, #C9A84C 0%, #F5C842 50%, #C9A84C 100%)',
+                  backgroundSize: '200% auto',
+                  color: '#050505',
+                  padding: '11px 22px',
+                  transition: 'background-position 0.4s ease, box-shadow 0.3s ease',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.backgroundPosition = 'right center';
+                  el.style.boxShadow = '0 0 30px rgba(201,168,76,0.4)';
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.backgroundPosition = 'left center';
+                  el.style.boxShadow = 'none';
+                }}
+              >
+                <ShoppingCart size={13} strokeWidth={2.5} />
+                {content.cta}
+              </a>
+
+              {/* Hamburger — mobile */}
+              <button
+                id="nav-hamburger"
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Abrir menú"
+                className="lg:hidden flex items-center justify-center w-9 h-9 border border-white/10 text-[#888] hover:text-white hover:border-[#C9A84C]/40 transition-all duration-200"
+              >
+                <Menu size={18} />
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           DRAWER MOBILE
-      ════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       <AnimatePresence>
-        {menuOpen && (
+        {drawerOpen && (
           <>
             {/* Backdrop */}
             <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-              onClick={() => setMenuOpen(false)}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-sm"
+              onClick={() => setDrawerOpen(false)}
             />
-            {/* Drawer */}
-            <motion.div
+
+            {/* Drawer panel */}
+            <motion.aside
+              key="drawer"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed right-0 top-0 bottom-0 z-50 w-[280px] bg-[#060606] border-l border-white/5 flex flex-col"
+              transition={{ type: 'tween', duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed right-0 top-0 bottom-0 z-[80] w-72 bg-[#080808] border-l border-white/[0.06] flex flex-col"
             >
               {/* Header drawer */}
-              <div className="flex items-center justify-between px-6 h-16 border-b border-white/5">
-                <div className="flex items-center gap-2">
-                  <WaveProjectLogo size={26} />
-                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '13px', letterSpacing: '0.15em' }}
-                        className="text-white">
+              <div className="flex items-center justify-between h-[70px] px-6 border-b border-white/[0.06]">
+                <div className="flex items-center gap-2.5">
+                  <Image
+                    src="/LOGO.PNG"
+                    alt="Wave Project Gym"
+                    width={30}
+                    height={30}
+                    className="object-contain"
+                    style={{ filter: 'invert(1) brightness(10)' }}
+                  />
+                  <span className="text-white"
+                        style={{ fontFamily: BC, fontWeight: 900, fontSize: '13px', letterSpacing: '0.15em' }}>
                     WAVE PROJECT GYM
                   </span>
                 </div>
-                <button onClick={() => setMenuOpen(false)} className="text-[#555] hover:text-white transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(false)}
+                  className="text-[#555] hover:text-white transition-colors p-1"
+                  aria-label="Cerrar"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Links */}
-              <nav className="flex flex-col divide-y divide-white/4 flex-1 overflow-y-auto">
-                {labels.links.map((label, i) => (
+              {/* Links del drawer */}
+              <nav className="flex-1 overflow-y-auto py-4">
+                {content.links.map((link, i) => (
                   <motion.a
-                    key={NAV_HREFS[i]}
-                    href={NAV_HREFS[i]}
-                    initial={{ opacity: 0, x: 20 }}
+                    key={link.href}
+                    href={link.href}
+                    initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-4 px-6 py-5 text-[#666] hover:text-white hover:bg-white/2 transition-all duration-150 group"
+                    transition={{ delay: i * 0.05 + 0.1 }}
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex items-center gap-4 px-6 py-4 border-b border-white/[0.04] transition-colors duration-150 hover:bg-white/[0.02]"
                   >
-                    <span className="text-[#C9A84C]/30 font-barlow text-xs font-bold"
-                          style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <span className="text-[#C9A84C]/25"
+                          style={{ fontFamily: BC, fontWeight: 700, fontSize: '11px' }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.18em' }}>
-                      {label}
+                    <span className="text-[#888] hover:text-white"
+                          style={{ fontFamily: BC, fontWeight: 700, fontSize: '16px', letterSpacing: '0.18em' }}>
+                      {link.label}
                     </span>
-                    <span className="ml-auto text-[#333] group-hover:text-[#C9A84C] text-xs">→</span>
+                    <span className="ml-auto text-[#2A2A2A]" style={{ fontFamily: BC }}>→</span>
                   </motion.a>
                 ))}
               </nav>
 
-              {/* Footer drawer: idioma + CTA */}
-              <div className="border-t border-white/5 p-6 flex flex-col gap-4">
-                {/* Idiomas en drawer */}
+              {/* Footer drawer */}
+              <div className="p-6 border-t border-white/[0.06] flex flex-col gap-4">
+                {/* Idioma mobile */}
                 <div>
-                  <div className="font-barlow text-[#444] text-[9px] tracking-[0.3em] uppercase mb-3"
-                       style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
-                    IDIOMA
-                  </div>
+                  <p className="text-[#444] mb-3"
+                     style={{ fontFamily: BC, fontWeight: 600, fontSize: '9px', letterSpacing: '0.3em' }}>
+                    IDIOMA / LANGUAGE
+                  </p>
                   <div className="flex gap-2">
                     {LANGS.map(l => (
                       <button
                         key={l.code}
+                        type="button"
                         id={`mobile-lang-${l.code.toLowerCase()}`}
                         onClick={() => setLang(l.code)}
-                        className={`flex-1 flex flex-col items-center gap-1 py-2 border transition-all duration-200 ${
-                          lang === l.code
-                            ? 'border-[#C9A84C]/50 bg-[rgba(201,168,76,0.08)] text-[#C9A84C]'
-                            : 'border-white/8 text-[#444] hover:border-white/20'
-                        }`}
+                        className="flex-1 flex flex-col items-center gap-1.5 py-2.5 border transition-all duration-200"
+                        style={{
+                          borderColor: lang === l.code ? 'rgba(201,168,76,0.5)' : 'rgba(255,255,255,0.06)',
+                          background: lang === l.code ? 'rgba(201,168,76,0.06)' : 'transparent',
+                        }}
                       >
-                        <span className="text-sm">{l.flag}</span>
-                        <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '9px', letterSpacing: '0.2em' }}>
+                        <span className="text-base leading-none">{l.flag}</span>
+                        <span className={lang === l.code ? 'text-[#C9A84C]' : 'text-[#444]'}
+                              style={{ fontFamily: BC, fontWeight: 700, fontSize: '9px', letterSpacing: '0.2em' }}>
                           {l.code}
                         </span>
                       </button>
@@ -369,23 +446,29 @@ export default function Navbar() {
                   </div>
                 </div>
 
+                {/* CTA mobile */}
                 <a
                   href="#planes"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-4 text-black font-bold"
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center justify-center gap-2 py-4 text-[#050505]"
                   style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontFamily: BC,
                     fontWeight: 800,
                     fontSize: '12px',
-                    letterSpacing: '0.15em',
+                    letterSpacing: '0.18em',
                     background: 'linear-gradient(135deg, #C9A84C, #F5C842)',
                   }}
                 >
-                  <ShoppingCart size={14} />
-                  {labels.cta}
+                  <ShoppingCart size={14} strokeWidth={2.5} />
+                  {content.cta}
                 </a>
+
+                <p className="text-center text-[#2A2A2A]"
+                   style={{ fontFamily: BC, fontWeight: 600, fontSize: '9px', letterSpacing: '0.12em' }}>
+                  CALLE 6 235, CONCÓN · CHILE
+                </p>
               </div>
-            </motion.div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>

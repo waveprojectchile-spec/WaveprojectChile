@@ -46,13 +46,22 @@ export default function HeroSection() {
       className="relative min-h-screen overflow-hidden flex items-center scanlines"
     >
       {/* ══════════════════════════════════
-          FONDO: imagen atardecer dramático
+          FONDO: Video de fondo
       ══════════════════════════════════ */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 h-[120%] -top-[10%]">
-        <div
-          className="w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/assets/hero-exterior.jpg')" }}
-        />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover absolute inset-0"
+        >
+          <source src="/FONDO.mp4" type="video/mp4" />
+        </video>
+        {/* Gradiente base siempre visible */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse 120% 80% at 70% 40%, rgba(180,100,10,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 30% 60%, rgba(201,168,76,0.08) 0%, transparent 50%)'
+        }} />
         {/* Capas de overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/95 via-[#050505]/70 to-[#050505]/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/40" />
@@ -88,7 +97,7 @@ export default function HeroSection() {
           >
             <div className="chip w-fit animate-border-glow">
               <span className="w-1.5 h-1.5 rounded-full bg-[#F5C842] animate-pulse" />
-              1ª PREVENTA OFICIAL — CONCEPCIÓN
+              1ª PREVENTA OFICIAL — CONCÓN, CHILE
             </div>
           </motion.div>
 
