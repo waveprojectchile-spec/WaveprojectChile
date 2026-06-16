@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 const client = new MercadoPagoConfig({ 
-  accessToken: process.env.MP_ACCESS_TOKEN || process.env.MERCADOPAGO_ACCESS_TOKEN || '' 
+  accessToken: process.env.MP_ACCESS_TOKEN! 
 });
 
 export async function POST(req: Request) {
@@ -39,7 +39,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ id: result.id, init_point: result.init_point });
   } catch (error) {
-    console.error('Error creating preference:', error);
-    return NextResponse.json({ error: 'Error al crear la preferencia de pago' }, { status: 500 });
+    console.error('MP Error:', error);
+    return NextResponse.json(
+      { error: 'Error al procesar el pago', detail: error }, 
+      { status: 500 }
+    );
   }
 }
