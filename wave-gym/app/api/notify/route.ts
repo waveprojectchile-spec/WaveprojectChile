@@ -2,8 +2,9 @@ import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { Resend } from 'resend'
 
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Las inicializamos con un fallback para que Vercel no falle al momento de hacer el build
+const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || 'dummy' })
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy')
 
 export async function POST(req: Request) {
   try {
