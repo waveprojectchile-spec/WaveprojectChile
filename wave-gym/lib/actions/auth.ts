@@ -75,5 +75,6 @@ export async function registerAction(formData: FormData) {
     console.error('[REGISTRO ADMIN ERROR]', adminError)
   }
 
-  redirect('/mi-cuenta')
+  // NO usar redirect() aquí - retornar success y redirigir desde el cliente
+  return { success: true }
 }

@@ -57,7 +57,13 @@ export default function RegistroPage() {
     if (!validarRut(rut)) { setRutError('RUT inválido. Verifica el dígito verificador.'); return }
     setRutError(null)
     const result = await registerAction(formData)
-    if (result?.error) setError(result.error)
+    if (result?.success) {
+      window.location.href = '/mi-cuenta'
+      return
+    }
+    if (result?.error) {
+      setError(result.error)
+    }
   }
 
   const inputClass = "w-full bg-black border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#FFD600]/50 transition-colors"
