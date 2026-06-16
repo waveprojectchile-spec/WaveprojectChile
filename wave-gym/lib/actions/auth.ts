@@ -23,22 +23,38 @@ export async function loginAction(formData: FormData) {
     return { error: 'Credenciales inválidas' }
   }
 
-  // Cliente con permisos totales para leer roles
-  const supabaseAdmin = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  let userRole = 'cliente'
+  
+  try {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY no está definida')
+    }
 
-  // Después del login exitoso:
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', data.user.id)
-    .single()
+    // Cliente con permisos totales para leer roles
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
 
-  console.log('Profile encontrado:', profile)
+    // Después del login exitoso:
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
 
-  if (profile?.role === 'admin') {
+    if (profileError) {
+      console.error('Error al obtener perfil:', profileError)
+    } else {
+      userRole = profile?.role || 'cliente'
+      console.log('Profile encontrado:', profile)
+    }
+  } catch (err: any) {
+    console.error('Error en Supabase Admin:', err.message)
+    return { error: 'Error interno del servidor (ver logs)' }
+  }
+
+  if (userRole === 'admin') {
     redirect('/dashboard')
   } else {
     redirect('/mi-cuenta')
