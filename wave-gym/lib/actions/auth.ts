@@ -29,9 +29,12 @@ export async function loginAction(formData: FormData) {
     .eq('id', data.user.id)
     .single()
 
-  if (profile?.role === 'admin') {
+  const userRole = profile?.role?.trim()?.toLowerCase()
+
+  if (userRole === 'admin') {
     redirect('/dashboard')
   } else {
+    // Si no tiene perfil o su rol es cliente u otro, va a su cuenta normal
     redirect('/mi-cuenta')
   }
 }

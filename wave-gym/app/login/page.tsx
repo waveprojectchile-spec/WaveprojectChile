@@ -47,19 +47,25 @@ export default function LoginPage() {
           </h1>
 
           {/* Tabs */}
-          <div className="flex border-b border-neutral-800 mb-8">
+          <div className="flex mb-8 bg-neutral-950 p-1 border border-neutral-800">
             <button
+              type="button"
               onClick={() => setTab('cliente')}
-              className={`flex-1 pb-4 text-sm font-bold uppercase tracking-widest transition-colors ${
-                tab === 'cliente' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'
+              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest transition-all ${
+                tab === 'cliente' 
+                  ? 'bg-neutral-800 text-white' 
+                  : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               CLIENTE
             </button>
             <button
+              type="button"
               onClick={() => setTab('admin')}
-              className={`flex-1 pb-4 text-sm font-bold uppercase tracking-widest transition-colors ${
-                tab === 'admin' ? 'text-white border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'
+              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest transition-all ${
+                tab === 'admin' 
+                  ? 'bg-neutral-800 text-white' 
+                  : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               ADMIN
