@@ -2,7 +2,9 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
-import { CheckCircle, Clock, AlertCircle, LogOut, CreditCard } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { CheckCircle, Clock, AlertCircle, LogOut } from 'lucide-react'
+import PagarButton from './PagarButton'
 
 const fmt = (n: number) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n)
 
@@ -19,11 +21,7 @@ const ESTADO_CONFIG: Record<string, { label: string; color: string; Icon: any }>
 export default async function MiCuentaPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    const { redirect } = await import('next/navigation')
-    redirect('/login')
-    return null as never
-  }
+  if (!user) redirect('/login')
 
   const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
@@ -32,54 +30,13 @@ export default async function MiCuentaPage() {
     .single()
 
   if (profile?.role === 'admin' || profile?.role === 'colaborador') {
-    const { redirect } = await import('next/navigation')
     redirect('/dashboard')
-    return null as never
   }
 
   const estadoCfg = ESTADO_CONFIG[profile?.estado_pago || 'pendiente'] || ESTADO_CONFIG.pendiente
   const { Icon: EstadoIcon } = estadoCfg
   const isPaid = profile?.estado_pago === 'activo'
   const monto = profile?.plan ? PRECIOS[profile.plan.toUpperCase()] || 0 : 0
-
-  async function iniciarPago(formData: FormData) {
-    'use server'
-    let redirectUrl = ''
-    try {
-      const { cookies } = await import('next/headers')
-      const cookieStore = cookies()
-      const cookieHeader = cookieStore.getAll()
-        .map(c => `${c.name}=${c.value}`)
-        .join('; ')
-
-      const res = await fetch('https://waveproject-chile.vercel.app/api/checkout', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cookie': cookieHeader
-        },
-        body: JSON.stringify({ 
-          plan: profile?.plan, 
-          monto: monto, 
-          titulo: profile?.plan?.toUpperCase() || profile?.plan
-        }),
-      })
-
-      const data = await res.json()
-      console.log('[MI-CUENTA] Respuesta checkout:', data)
-      
-      if (data.init_point) {
-        redirectUrl = data.init_point
-      }
-    } catch (error) {
-      console.error('[MI-CUENTA] Error al iniciar pago:', error)
-    }
-
-    if (redirectUrl) {
-      const { redirect } = await import('next/navigation')
-      redirect(redirectUrl)
-    }
-  }
 
   return (
     <div className="bg-[#050505] min-h-screen flex flex-col selection:bg-[#FFD600] selection:text-black">
@@ -133,16 +90,7 @@ export default async function MiCuentaPage() {
             {!isPaid && profile?.plan && (
               <div className="text-center">
                 <p className="text-white/30 text-sm mb-6">Completa el pago para activar tu membresía y asegurar tu cupo.</p>
-                <form action={iniciarPago}>
-                  <button 
-                    type="submit"
-                    className="flex items-center justify-center gap-3 mx-auto px-10 py-4 font-black text-sm tracking-[0.2em] uppercase text-black"
-                    style={{ background: 'linear-gradient(120deg, #C9A84C 0%, #FFD600 50%, #C9A84C 100%)', backgroundSize: '200% auto' }}
-                  >
-                    <CreditCard size={18} strokeWidth={2.5} />
-                    PAGAR AHORA
-                  </button>
-                </form>
+                <PagarButton plan={profile.plan} monto={monto} />
               </div>
             )}
             {isPaid && (
