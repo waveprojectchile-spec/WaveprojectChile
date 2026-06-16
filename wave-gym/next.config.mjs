@@ -14,6 +14,20 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.supabase.co' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/registro',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/mi-cuenta',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;

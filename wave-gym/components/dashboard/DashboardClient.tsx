@@ -1,32 +1,24 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Users, ShoppingBag, UserCog, Store, LogOut } from 'lucide-react';
+import { BarChart3, Users, LogOut } from 'lucide-react';
 import VentasSection from './VentasSection';
 import ClientesSection from './ClientesSection';
-import PreventasSection from './PreventasSection';
-import PersonalSection from './PersonalSection';
-import TiendaSection from './TiendaSection';
 
-type Section = 'ventas' | 'clientes' | 'preventas' | 'personal' | 'tienda';
+type Section = 'ventas' | 'clientes';
 
 interface Props {
   adminNombre: string;
   clientes: any[];
   ventas: any[];
-  colaboradores: any[];
-  productos: any[];
 }
 
 const NAV = [
-  { id: 'ventas' as Section, label: 'VENTAS', icon: BarChart3 },
   { id: 'clientes' as Section, label: 'CLIENTES', icon: Users },
-  { id: 'preventas' as Section, label: 'PREVENTAS', icon: ShoppingBag },
-  { id: 'personal' as Section, label: 'PERSONAL', icon: UserCog },
-  { id: 'tienda' as Section, label: 'TIENDA', icon: Store },
+  { id: 'ventas' as Section, label: 'VENTAS', icon: BarChart3 },
 ];
 
-export default function DashboardClient({ adminNombre, clientes, ventas, colaboradores, productos }: Props) {
-  const [section, setSection] = useState<Section>('ventas');
+export default function DashboardClient({ adminNombre, clientes, ventas }: Props) {
+  const [section, setSection] = useState<Section>('clientes');
 
   const ventasAprobadas = ventas.filter((v) => v.estado === 'aprobado' || v.estado === 'approved');
   const totalIngresos = ventasAprobadas.reduce((s, v) => s + (v.monto || 0), 0);
@@ -85,9 +77,6 @@ export default function DashboardClient({ adminNombre, clientes, ventas, colabor
 
         {section === 'ventas' && <VentasSection ventas={ventas} fmt={fmt} />}
         {section === 'clientes' && <ClientesSection clientes={clientes} />}
-        {section === 'preventas' && <PreventasSection productos={productos} fmt={fmt} />}
-        {section === 'personal' && <PersonalSection colaboradores={colaboradores} />}
-        {section === 'tienda' && <TiendaSection productos={productos} fmt={fmt} />}
       </main>
     </div>
   );

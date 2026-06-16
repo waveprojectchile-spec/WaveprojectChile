@@ -47,22 +47,22 @@ export async function POST(req: Request) {
     try {
       await resend.emails.send({
         from: 'Wave Project Gym <onboarding@resend.dev>',
-        to: ['mpeg.logistica@gmail.com'],
-        subject: `Nuevo Pago Recibido - Plan ${ref.plan}`,
+        to: ['waveprojectchile@gmail.com'],
+        subject: `Nueva venta preventa — ${ref.plan} — ${ref.nombre}`,
         html: `
-          <h2>¡Nuevo cliente ha pagado un plan!</h2>
-          <ul>
-            <li><strong>Nombre:</strong> ${ref.nombre}</li>
-            <li><strong>RUT:</strong> ${ref.rut}</li>
-            <li><strong>Email:</strong> ${ref.email}</li>
-            <li><strong>Teléfono:</strong> ${ref.telefono}</li>
-            <li><strong>Plan:</strong> ${ref.plan}</li>
-            <li><strong>Monto:</strong> $${ref.monto || payment.transaction_amount}</li>
-            <li><strong>Payment ID:</strong> ${paymentIdStr}</li>
-          </ul>
+          <p>Nueva venta confirmada en Wave Project Gym</p>
+          <br/>
+          <p><strong>Plan:</strong> ${ref.plan}</p>
+          <p><strong>Monto:</strong> $${ref.monto || payment.transaction_amount}</p>
+          <p><strong>Nombre:</strong> ${ref.nombre}</p>
+          <p><strong>RUT:</strong> ${ref.rut}</p>
+          <p><strong>Email:</strong> ${ref.email}</p>
+          <p><strong>Teléfono:</strong> ${ref.telefono}</p>
+          <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CL')} ${new Date().toLocaleTimeString('es-CL')}</p>
+          <p><strong>ID Pago MercadoPago:</strong> ${paymentIdStr}</p>
         `
       })
-      console.log('[WEBHOOK] Email enviado a mpeg.logistica@gmail.com')
+      console.log('[WEBHOOK] Email enviado a waveprojectchile@gmail.com')
     } catch (emailErr) {
       console.error('[WEBHOOK] Error enviando email:', emailErr)
     }

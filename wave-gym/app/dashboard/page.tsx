@@ -20,9 +20,7 @@ export default async function DashboardPage() {
   // Obtener datos reales de Supabase en paralelo para optimizar tiempo de carga
   const [
     { data: clientes },
-    { data: ventas },
-    { data: productos },
-    { data: colaboradores }
+    { data: ventas }
   ] = await Promise.all([
     getSupabaseAdmin()
       .from('clientes')
@@ -31,15 +29,6 @@ export default async function DashboardPage() {
     getSupabaseAdmin()
       .from('ventas')
       .select('*')
-      .order('created_at', { ascending: false }),
-    getSupabaseAdmin()
-      .from('productos')
-      .select('*')
-      .order('created_at', { ascending: false }),
-    getSupabaseAdmin()
-      .from('profiles')
-      .select('*')
-      .in('role', ['admin', 'colaborador'])
       .order('created_at', { ascending: false })
   ])
 
@@ -48,8 +37,6 @@ export default async function DashboardPage() {
       adminNombre={profile?.nombre || user.email || 'Admin'}
       clientes={clientes || []}
       ventas={ventas || []}
-      productos={productos || []}
-      colaboradores={colaboradores || []}
     />
   )
 }

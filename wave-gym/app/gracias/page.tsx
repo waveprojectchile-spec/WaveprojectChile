@@ -45,9 +45,9 @@ export default function GraciasPage() {
           </h2>
 
           <p className="text-white/40 text-sm leading-relaxed mb-10 max-w-md">
-            Tu pago fue procesado exitosamente. Gracias por confiar en nosotros y ser parte de esta comunidad.
+            ¡Gracias por ser parte de Wave Project Gym! Tu lugar en la preventa está asegurado.
             <br /><br />
-            Nuestro equipo se comunicará contigo a la brevedad para coordinar todos los detalles de tu membresía.
+            Nuestro equipo se pondrá en contacto contigo a la brevedad para coordinar los detalles. ¡Nos vemos pronto!
           </p>
 
           {/* Cards de info */}
@@ -79,17 +79,11 @@ export default function GraciasPage() {
           </div>
 
           {/* Botones */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/mi-cuenta"
-              className="inline-flex items-center justify-center gap-2 px-10 py-4 font-black text-xs tracking-[0.2em] uppercase text-black transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(120deg, #C9A84C 0%, #FFD600 50%, #C9A84C 100%)' }}
-            >
-              VER MI CUENTA
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full">
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 px-10 py-4 font-black text-xs tracking-[0.2em] uppercase text-white/50 border border-white/10 hover:border-[#FFD600]/30 hover:text-white transition-all"
+              className="inline-flex items-center justify-center gap-2 px-10 py-4 font-black text-xs tracking-[0.2em] uppercase text-black transition-opacity hover:opacity-90"
+              style={{ background: 'linear-gradient(120deg, #C9A84C 0%, #FFD600 50%, #C9A84C 100%)' }}
             >
               VOLVER AL INICIO
             </Link>
