@@ -1,8 +1,6 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { NextResponse } from 'next/server'
 
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
-
 export async function POST(req: Request) {
   try {
     const { cookies } = await import('next/headers')
@@ -39,6 +37,7 @@ export async function POST(req: Request) {
       plan, monto, titulo, email, userId: user_id, external_reference: externalReferenceData 
     })
 
+    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
     const preference = await new Preference(client).create({
       body: {
         items: [{ id: plan, title: `Wave Project Gym — Plan ${titulo}`, quantity: 1, unit_price: Number(monto), currency_id: 'CLP' }],
