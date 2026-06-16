@@ -61,19 +61,14 @@ export default function PlansSection() {
     try {
       setLoadingPlan(plan.id);
 
-      // Try to get session for user metadata
-      let userId: string | null = null;
-      let userEmail = '';
-      try {
-        const { createClient } = await import('@supabase/supabase-js');
-        const sb = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
-        const { data: { session } } = await sb.auth.getSession();
-        userId = session?.user?.id || null;
-        userEmail = session?.user?.email || '';
-      } catch {}
+      // Verificar sesión primero
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Si no hay sesión, redirigir a registro con el plan seleccionado
+      if (!session) {
+        window.location.href = `/registro?plan=${plan.id}`;
+        return;
+      }
 
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -82,20 +77,22 @@ export default function PlansSection() {
           plan: plan.id,
           monto: plan.precio,
           titulo: plan.nombre,
-          user_id: userId,
-          email: userEmail,
         })
       });
       const data = await res.json();
+
       if (data.init_point) {
-        window.location.href = data.init_point;
+        window.open(data.init_point, '_blank');
+        setLoadingPlan(null);
+      } else if (data.error === 'Debes iniciar sesión para comprar') {
+        window.location.href = `/registro?plan=${plan.id}`;
       } else {
-        alert('Error al procesar el pago');
+        alert(data.error || 'Error al procesar el pago. Intenta de nuevo.');
         setLoadingPlan(null);
       }
     } catch (error) {
       console.error(error);
-      alert('Error al procesar el pago');
+      alert('Error de conexión. Intenta de nuevo.');
       setLoadingPlan(null);
     }
   };
