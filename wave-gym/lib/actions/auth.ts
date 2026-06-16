@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 
 export async function loginAction(formData: FormData) {
@@ -22,12 +23,20 @@ export async function loginAction(formData: FormData) {
     return { error: 'Credenciales inválidas' }
   }
 
-  // Obtener rol del perfil
-  const { data: profile } = await supabase
+  // Cliente con permisos totales para leer roles
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Después del login exitoso:
+  const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('role')
     .eq('id', data.user.id)
     .single()
+
+  console.log('Profile encontrado:', profile)
 
   if (profile?.role === 'admin') {
     redirect('/dashboard')
