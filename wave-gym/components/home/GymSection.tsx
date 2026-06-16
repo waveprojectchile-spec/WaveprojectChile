@@ -28,17 +28,22 @@ export default function GymSection() {
           <div className="absolute -inset-1 border border-[rgba(201,168,76,0.05)] pointer-events-none" />
 
           <div className="relative overflow-hidden aspect-[4/3]">
-            <div
-              className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-              style={{ backgroundImage: "url('/assets/gym-interior.jpg')" }}
-            />
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            >
+              <source src="/FONDO.mp4" type="video/mp4" />
+            </video>
             <div className="absolute inset-0 bg-gradient-to-t from-[#080808]/70 via-transparent to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/50 to-transparent" />
 
             {/* Overlay text */}
             <div className="absolute bottom-6 left-6">
               <div className="font-display text-2xl text-white tracking-widest">WAVE PROJECT GYM</div>
-              <div className="font-body text-[#666] text-xs tracking-widest mt-0.5">Concepción · Chile</div>
+              <div className="font-body text-[#666] text-xs tracking-widest mt-0.5">Calle 6 235, Concón</div>
             </div>
           </div>
         </motion.div>
@@ -61,7 +66,7 @@ export default function GymSection() {
               Wave Project Gym nació con un propósito claro: crear un espacio donde cada persona pueda transformarse. Equipamiento de primera, un ambiente diseñado para motivarte y una comunidad que te impulsa.
             </p>
             <p className="font-body text-[#444] text-sm leading-relaxed">
-              Ubicado en Concepción, nuestro gimnasio está pensado para quien toma en serio su entrenamiento y su bienestar.
+              Ubicado en Calle 6 235, Concón, nuestro gimnasio está pensado para quien toma en serio su entrenamiento y su bienestar.
             </p>
           </div>
 
