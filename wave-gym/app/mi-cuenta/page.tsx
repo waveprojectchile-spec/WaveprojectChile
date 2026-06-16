@@ -89,11 +89,10 @@ export default async function MiCuentaPage() {
             {!isPaid && profile?.plan && (
               <div className="text-center">
                 <p className="text-white/30 text-sm mb-6">Completa el pago para activar tu membresía y asegurar tu cupo.</p>
-                <form action="/api/checkout-redirect" method="get">
+                <form action="/api/checkout-redirect" method="POST">
                   <input type="hidden" name="plan" value={profile.plan} />
                   <input type="hidden" name="monto" value={monto} />
-                  <input type="hidden" name="user_id" value={user.id} />
-                  <input type="hidden" name="email" value={user.email || ''} />
+                  <input type="hidden" name="titulo" value={profile.plan?.toUpperCase()} />
                   <button type="submit"
                     className="flex items-center justify-center gap-3 mx-auto px-10 py-4 font-black text-sm tracking-[0.2em] uppercase text-black"
                     style={{ background: 'linear-gradient(120deg, #C9A84C 0%, #FFD600 50%, #C9A84C 100%)', backgroundSize: '200% auto' }}
