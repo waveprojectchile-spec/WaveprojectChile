@@ -71,7 +71,7 @@ export default function Footer() {
               ))}
               {/* WhatsApp */}
               <a
-                href="https://wa.me/56912345678"
+                href="https://wa.me/56942379197"
                 id="footer-wa"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -88,7 +88,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <h4 className="font-heading font-black text-[#444] text-[9px] tracking-[0.3em] uppercase mb-1">CONTACTO</h4>
             {[
-              { icon: '📞', text: '+56 9 1234 5678' },
+              { icon: '📞', text: '+569 942 379 197', href: 'tel:+56942379197' },
               { icon: '✉', text: 'waveprojectchile@gmail.com', href: 'mailto:waveprojectchile@gmail.com' },
               { icon: '📍', text: 'Calle 6 235, Concón, Chile' },
             ].map(item => (
@@ -119,7 +119,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/5 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="font-body text-[#333] text-[10px] tracking-wider">
-            © 2024 WAVE PROJECT GYM. TODOS LOS DERECHOS RESERVADOS.
+            © 2025 WAVE PROJECT GYM. TODOS LOS DERECHOS RESERVADOS.
           </p>
           <div className="flex gap-6">
             {['Términos y condiciones', 'Políticas de privacidad'].map(t => (

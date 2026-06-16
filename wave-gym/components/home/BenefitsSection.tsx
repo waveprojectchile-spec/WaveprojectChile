@@ -10,14 +10,10 @@ const beneficios = [
 
 export default function BenefitsSection() {
   return (
-    <section id="beneficios" className="relative py-28 px-6 md:px-12 lg:px-20 overflow-hidden">
-      {/* Imagen fondo oscura */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/assets/benefits-exterior.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-[#050505]/92" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#050505_100%)]" />
+    <section id="beneficios" className="relative py-28 px-6 md:px-12 lg:px-20 overflow-hidden bg-[#060606]">
+      {/* Fondo con gradiente */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(201,168,76,0.04),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_0%_100%,rgba(201,168,76,0.03),transparent)]" />
 
       {/* Líneas decorativas */}
       <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#C9A84C]/20 to-transparent" />
