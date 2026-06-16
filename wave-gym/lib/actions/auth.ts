@@ -23,48 +23,26 @@ export async function loginAction(formData: FormData) {
     return { error: 'Credenciales inválidas' }
   }
 
-  let userRole = 'cliente'
-  let profileData = null
-  
-  try {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error('SUPABASE_SERVICE_ROLE_KEY no está definida')
-    }
-
-    // Cliente con permisos totales para leer roles
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-
-    // Después del login exitoso:
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
-
-    if (profileError) {
-      console.error('Error al obtener perfil:', profileError)
-    } else {
-      userRole = profile?.role || 'cliente'
-      profileData = profile
-      console.log('Profile encontrado:', profile)
-    }
-  } catch (err: any) {
-    console.error('Error en Supabase Admin:', err.message)
-    return { error: 'Error interno del servidor (ver logs)' }
-  }
-
   console.log('SERVICE KEY existe:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
   console.log('User ID:', data.user.id)
-  console.log('Profile:', JSON.stringify(profileData))
 
-  if (userRole === 'admin') {
-    redirect('/dashboard')
-  } else {
-    redirect('/mi-cuenta')
-  }
+  // Cliente con permisos totales para leer roles
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Después del login exitoso:
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single()
+
+  console.log('Profile:', JSON.stringify(profile))
+
+  if (profile?.role === 'admin') redirect('/dashboard')
+  else redirect('/mi-cuenta')
 }
 
 export async function registerAction(formData: FormData) {
