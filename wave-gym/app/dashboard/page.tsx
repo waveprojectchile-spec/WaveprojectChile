@@ -11,7 +11,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
-    .select('role')
+    .select('role, nombre')
     .eq('id', user.id)
     .single()
 
@@ -44,21 +44,13 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false })
   ])
 
-  // Calcular métricas
-  const ingresosActuales = (ventas || []).reduce((acc: number, v: any) => acc + (v.monto || 0), 0)
-  const metricas = {
-    ingresos: ingresosActuales,
-    ventas: ventas?.length || 0,
-    clientes: clientes?.length || 0,
-  }
-
   return (
     <DashboardClient 
+      adminNombre={profile?.nombre || user.email || 'Admin'}
       clientes={clientes || []}
       ventas={ventas || []}
       productos={productos || []}
       colaboradores={colaboradores || []}
-      metricas={metricas}
     />
   )
 }
