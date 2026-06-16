@@ -17,27 +17,16 @@ export default async function DashboardPage() {
 
   if (profile?.role !== 'admin') redirect('/mi-cuenta')
 
-  // Obtener datos reales de Supabase en paralelo para optimizar tiempo de carga
-  const [
-    { data: clientes },
-    { data: ventas }
-  ] = await Promise.all([
-    getSupabaseAdmin()
-      .from('clientes')
-      .select('*')
-      .eq('estado_pago', 'aprobado')
-      .order('fecha_pago', { ascending: false }),
-    getSupabaseAdmin()
-      .from('ventas')
-      .select('*')
-      .order('created_at', { ascending: false })
-  ])
+  // Obtener datos reales de Supabase
+  const { data: clientes } = await getSupabaseAdmin()
+    .from('clientes')
+    .select('*')
+    .order('created_at', { ascending: false });
 
   return (
     <DashboardClient 
       adminNombre={profile?.nombre || user.email || 'Admin'}
       clientes={clientes || []}
-      ventas={ventas || []}
     />
   )
 }

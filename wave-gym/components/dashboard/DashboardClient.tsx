@@ -9,7 +9,6 @@ type Section = 'ventas' | 'clientes';
 interface Props {
   adminNombre: string;
   clientes: any[];
-  ventas: any[];
 }
 
 const NAV = [
@@ -17,13 +16,13 @@ const NAV = [
   { id: 'ventas' as Section, label: 'VENTAS', icon: BarChart3 },
 ];
 
-export default function DashboardClient({ adminNombre, clientes, ventas }: Props) {
+export default function DashboardClient({ adminNombre, clientes }: Props) {
   const [section, setSection] = useState<Section>('clientes');
 
-  const ventasAprobadas = ventas.filter((v) => v.estado === 'aprobado' || v.estado === 'approved');
-  const totalIngresos = ventasAprobadas.reduce((s, v) => s + (v.monto || 0), 0);
+  const ventasAprobadas = clientes.filter((c) => c.estado_pago === 'aprobado');
+  const totalIngresos = ventasAprobadas.reduce((s, c) => s + (c.monto || 0), 0);
   const totalVentas = ventasAprobadas.length;
-  const clientesActivos = clientes.length;
+  const clientesActivos = ventasAprobadas.length; // Solo consideramos activos a los que pagaron
 
   const fmt = (n: number) =>
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n);
@@ -75,8 +74,8 @@ export default function DashboardClient({ adminNombre, clientes, ventas }: Props
           ))}
         </div>
 
-        {section === 'ventas' && <VentasSection ventas={ventas} fmt={fmt} />}
-        {section === 'clientes' && <ClientesSection clientes={clientes} />}
+        {section === 'ventas' && <VentasSection ventas={clientes} fmt={fmt} />}
+        {section === 'clientes' && <ClientesSection clientes={ventasAprobadas} />}
       </main>
     </div>
   );
