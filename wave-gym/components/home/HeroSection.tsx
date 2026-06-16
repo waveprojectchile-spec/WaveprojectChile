@@ -1,7 +1,6 @@
 'use client';
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Image from 'next/image';
 import { ShoppingCart, ArrowRight, Lock, Zap } from 'lucide-react';
 import ParticleCanvas from '@/components/ui/ParticleCanvas';
 import { useRealtimeCupos } from '@/hooks/useRealtimeCupos';
@@ -179,22 +178,6 @@ export default function HeroSection() {
 
         {/* ── COLUMNA DERECHA (cupos card) ── */}
         <div className="lg:col-span-5 flex flex-col items-end gap-6">
-          {/* Logo grande */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-            animate={{ opacity: 0.12, scale: 1, rotate: 0 }}
-            transition={{ delay: 0.4, duration: 1.2, ease: 'easeOut' }}
-            className="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none"
-          >
-            <Image
-              src="/logo-nuevo.png"
-              alt="Wave Project Gym"
-              width={420}
-              height={420}
-              className="object-contain opacity-40"
-            />
-          </motion.div>
-
           {/* Card cupos */}
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
