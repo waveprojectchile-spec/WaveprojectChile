@@ -272,6 +272,24 @@ export default function Navbar() {
 
               <div className="hidden md:block w-px h-5 bg-white/[0.06]" />
 
+              {/* Login Links */}
+              <div className="hidden md:flex items-center gap-4 mr-1">
+                <a 
+                  href="/login" 
+                  className="text-white hover:text-[#C9A84C] transition-colors" 
+                  style={{ fontFamily: BC, fontWeight: 700, fontSize: '11px', letterSpacing: '0.18em' }}
+                >
+                  MI CUENTA
+                </a>
+                <a 
+                  href="/login?tab=admin" 
+                  className="text-[#555] hover:text-[#888] transition-colors" 
+                  style={{ fontFamily: BC, fontWeight: 700, fontSize: '10px', letterSpacing: '0.18em' }}
+                >
+                  STAFF
+                </a>
+              </div>
+
               {/* CTA Comprar */}
               <a
                 href="#planes"

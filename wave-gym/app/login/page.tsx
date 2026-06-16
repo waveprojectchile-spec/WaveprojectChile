@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useFormStatus } from 'react-dom';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Input } from '@/components/ui/input';
@@ -19,8 +20,11 @@ function SubmitButton() {
   );
 }
 
-export default function LoginPage() {
-  const [tab, setTab] = useState<'cliente' | 'admin'>('cliente');
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'admin' ? 'admin' : 'cliente';
+  
+  const [tab, setTab] = useState<'cliente' | 'admin'>(initialTab);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
@@ -142,5 +146,13 @@ export default function LoginPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="bg-black min-h-screen flex items-center justify-center text-white">Cargando...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
