@@ -58,17 +58,21 @@ export async function registerAction(formData: FormData) {
     return { error: typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg) }
   }
 
-  const { error: profileError } = await getSupabaseAdmin().from('profiles').insert({
-    id: data.user.id,
-    role: 'cliente',
-    nombre, rut, telefono, fecha_nacimiento, edad,
-    plan, direccion, ciudad, region, codigo_postal,
-    enfermedades, operaciones, medicamentos, lesiones,
-    estado_pago: 'pendiente',
-  })
+  try {
+    const { error: profileError } = await getSupabaseAdmin().from('profiles').insert({
+      id: data.user.id,
+      role: 'cliente',
+      nombre, rut, telefono, fecha_nacimiento, edad,
+      plan, direccion, ciudad, region, codigo_postal,
+      enfermedades, operaciones, medicamentos, lesiones,
+      estado_pago: 'pendiente',
+    })
 
-  if (profileError) {
-    console.error('Error insertando perfil:', profileError)
+    if (profileError) {
+      console.error('Error insertando perfil:', profileError)
+    }
+  } catch (adminError) {
+    console.error('[REGISTRO ADMIN ERROR]', adminError)
   }
 
   redirect('/mi-cuenta')
