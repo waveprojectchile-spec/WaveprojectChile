@@ -33,17 +33,21 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Proteger rutas de dashboard
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+  // Rutas que requieren sesión
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/mi-cuenta')
+
+  if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Redirigir de login si ya está autenticado (se manejará según rol en /login pero aquí algo básico)
-  if (request.nextUrl.pathname.startsWith('/login') && user) {
-    // Si quisieramos redirigir según rol aquí, necesitaríamos consultar profiles, 
-    // pero es más fácil hacerlo en la página/acción directamente para no ralentizar el middleware
+  // Si ya tiene sesión, evitar que entre al login o registro
+  if ((request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/registro')) && user) {
+    const url = request.nextUrl.clone()
+    // Redirigir por defecto a mi-cuenta (si es admin, mi-cuenta o dashboard lo enviarán a donde corresponda después)
+    url.pathname = '/mi-cuenta'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
