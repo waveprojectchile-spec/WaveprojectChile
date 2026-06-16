@@ -28,53 +28,66 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function registerAction(formData: FormData) {
-  const { createClient } = await import('@/lib/supabase/server')
-  const supabase = await createClient()
-
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const nombre = formData.get('nombre') as string
-  const rut = formData.get('rut') as string
-  const telefono = formData.get('telefono') as string
-  const fecha_nacimiento = formData.get('fecha_nacimiento') as string
-  const plan = formData.get('plan') as string
-  const direccion = formData.get('direccion') as string
-  const ciudad = formData.get('ciudad') as string
-  const region = formData.get('region') as string
-  const codigo_postal = formData.get('codigo_postal') as string
-  const enfermedades = (formData.get('enfermedades') as string) || null
-  const operaciones = (formData.get('operaciones') as string) || null
-  const medicamentos = (formData.get('medicamentos') as string) || null
-  const lesiones = (formData.get('lesiones') as string) || null
-
-  const birthDate = new Date(fecha_nacimiento)
-  const edad = Math.floor(
-    (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-  )
-
-  const { data, error } = await supabase.auth.signUp({ email, password })
-  if (error || !data.user) {
-    const errorMsg = error?.message || 'Error desconocido';
-    return { error: typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg) }
-  }
-
   try {
-    const { error: profileError } = await getSupabaseAdmin().from('profiles').insert({
-      id: data.user.id,
-      role: 'cliente',
-      nombre, rut, telefono, fecha_nacimiento, edad,
-      plan, direccion, ciudad, region, codigo_postal,
-      enfermedades, operaciones, medicamentos, lesiones,
-      estado_pago: 'pendiente',
-    })
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
 
-    if (profileError) {
-      console.error('Error insertando perfil:', profileError)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const nombre = formData.get('nombre') as string
+    const rut = formData.get('rut') as string
+    const telefono = formData.get('telefono') as string
+    const fecha_nacimiento = formData.get('fecha_nacimiento') as string
+    const plan = formData.get('plan') as string
+    const direccion = formData.get('direccion') as string
+    const ciudad = formData.get('ciudad') as string
+    const region = formData.get('region') as string
+    const codigo_postal = formData.get('codigo_postal') as string
+    const enfermedades = (formData.get('enfermedades') as string) || null
+    const operaciones = (formData.get('operaciones') as string) || null
+    const medicamentos = (formData.get('medicamentos') as string) || null
+    const lesiones = (formData.get('lesiones') as string) || null
+
+    const birthDate = new Date(fecha_nacimiento)
+    const edad = Math.floor(
+      (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+    )
+
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error || !data?.user) {
+      console.error('[SUPABASE SIGNUP ERROR]', error);
+      let errorMsg = error?.message || 'Error desconocido en el registro.';
+      if (typeof errorMsg !== 'string') {
+        errorMsg = JSON.stringify(errorMsg, Object.getOwnPropertyNames(errorMsg) || []);
+      }
+      return { error: errorMsg }
     }
-  } catch (adminError) {
-    console.error('[REGISTRO ADMIN ERROR]', adminError)
-  }
 
-  // NO usar redirect() aquí - retornar success y redirigir desde el cliente
-  return { success: true }
+    try {
+      const { error: profileError } = await getSupabaseAdmin().from('profiles').insert({
+        id: data.user.id,
+        role: 'cliente',
+        nombre, rut, telefono, fecha_nacimiento, edad,
+        plan, direccion, ciudad, region, codigo_postal,
+        enfermedades, operaciones, medicamentos, lesiones,
+        estado_pago: 'pendiente',
+      })
+
+      if (profileError) {
+        console.error('Error insertando perfil:', profileError)
+      }
+    } catch (adminError) {
+      console.error('[REGISTRO ADMIN ERROR]', adminError)
+    }
+
+    // NO usar redirect() aquí - retornar success y redirigir desde el cliente
+    return { success: true }
+  } catch (err: any) {
+    console.error('[ACTION CATCH ERROR]', err);
+    let errMsg = err?.message || 'Error interno al procesar el registro.';
+    if (typeof errMsg !== 'string') {
+      errMsg = JSON.stringify(err, Object.getOwnPropertyNames(err) || []);
+    }
+    return { error: errMsg }
+  }
 }
