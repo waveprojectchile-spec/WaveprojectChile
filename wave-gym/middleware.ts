@@ -1,3 +1,4 @@
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -44,9 +45,31 @@ export async function middleware(request: NextRequest) {
 
   // Si ya tiene sesión, evitar que entre al login o registro
   if ((request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/registro')) && user) {
+    let role = 'cliente'
+    
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      )
+      
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        
+      if (profile) {
+        role = profile.role
+      }
+    }
+
     const url = request.nextUrl.clone()
-    // Redirigir por defecto a mi-cuenta (si es admin, mi-cuenta o dashboard lo enviarán a donde corresponda después)
-    url.pathname = '/mi-cuenta'
+    if (role === 'admin') {
+      url.pathname = '/dashboard'
+    } else {
+      url.pathname = '/mi-cuenta'
+    }
     return NextResponse.redirect(url)
   }
 

@@ -56,11 +56,9 @@ export async function loginAction(formData: FormData) {
     return { error: 'Error interno del servidor (ver logs)' }
   }
 
-  console.log('=== AUTH DEBUG ===')
+  console.log('SERVICE KEY existe:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
   console.log('User ID:', data.user.id)
-  console.log('Profile data:', JSON.stringify(profileData))
-  console.log('Role detectado:', userRole)
-  console.log('==================')
+  console.log('Profile:', JSON.stringify(profileData))
 
   if (userRole === 'admin') {
     redirect('/dashboard')
