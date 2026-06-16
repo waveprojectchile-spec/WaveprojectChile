@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { createClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
@@ -7,12 +7,12 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return Response.json({ error: 'No autorizado' }, { status: 401 })
     
-    const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile } = await getSupabaseAdmin().from('profiles').select('role').eq('id', user.id).single()
     if (profile?.role !== 'admin') return Response.json({ error: 'Prohibido' }, { status: 403 })
 
     const { nombre, email, password, role } = await req.json()
 
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await getSupabaseAdmin().auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       return Response.json({ error: error?.message || 'Error al crear usuario' }, { status: 400 })
     }
 
-    await supabaseAdmin.from('profiles').insert({
+    await getSupabaseAdmin().from('profiles').insert({
       id: data.user.id,
       nombre,
       role: role || 'colaborador',

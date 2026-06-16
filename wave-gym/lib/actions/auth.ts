@@ -2,7 +2,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string
@@ -16,7 +16,7 @@ export async function loginAction(formData: FormData) {
     return { error: 'Credenciales incorrectas' }
   }
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile } = await getSupabaseAdmin()
     .from('profiles')
     .select('role')
     .eq('id', data.user.id)
@@ -55,7 +55,7 @@ export async function registerAction(formData: FormData) {
   const { data, error } = await supabase.auth.signUp({ email, password })
   if (error || !data.user) return { error: error?.message || 'Error al crear usuario' }
 
-  await supabaseAdmin.from('profiles').insert({
+  await getSupabaseAdmin().from('profiles').insert({
     id: data.user.id,
     role: 'cliente',
     nombre, rut, telefono, fecha_nacimiento, edad,

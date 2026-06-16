@@ -1,10 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co';
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy-key-for-build-process';
-
-if (process.env.NODE_ENV === 'production' && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn('⚠️ CRÍTICO: SUPABASE_SERVICE_ROLE_KEY o NEXT_PUBLIC_SUPABASE_URL faltan en entorno de producción.');
+export function getSupabaseAdmin() {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY no configurada en producción — abortando para evitar comportamiento inconsistente')
+    }
+  }
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy-key-local-build'
+  )
 }
-
-export const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);

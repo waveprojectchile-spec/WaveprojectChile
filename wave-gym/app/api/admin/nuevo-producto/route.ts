@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { createClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
@@ -7,13 +7,13 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return Response.json({ error: 'No autorizado' }, { status: 401 })
     
-    const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile } = await getSupabaseAdmin().from('profiles').select('role').eq('id', user.id).single()
     if (profile?.role !== 'admin') return Response.json({ error: 'Prohibido' }, { status: 403 })
 
     const body = await req.json()
     const { nombre, descripcion, precio, stock, categoria, es_preventa, imagen_url } = body
 
-    const { error } = await supabaseAdmin.from('productos').insert({
+    const { error } = await getSupabaseAdmin().from('productos').insert({
       nombre,
       descripcion,
       precio: Number(precio),
