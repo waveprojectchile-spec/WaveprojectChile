@@ -25,6 +25,7 @@ export default async function DashboardPage() {
     getSupabaseAdmin()
       .from('clientes')
       .select('*')
+      .eq('estado_pago', 'aprobado')
       .order('fecha_pago', { ascending: false }),
     getSupabaseAdmin()
       .from('ventas')
