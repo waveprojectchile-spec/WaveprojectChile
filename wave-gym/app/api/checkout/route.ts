@@ -1,10 +1,33 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
 
 export async function POST(req: Request) {
   try {
-    const { plan, monto, titulo, user_id, email } = await req.json()
+    const cookieStore = cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { get: (name: string) => cookieStore.get(name)?.value } }
+    )
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const body = await req.json()
+    const { plan, monto, titulo } = body
+    const email = user?.email || ''
+    const user_id = user?.id || null
+
+    if (!user_id) {
+      return NextResponse.json(
+        { error: 'Debes iniciar sesión para comprar' },
+        { status: 401 }
+      )
+    }
+
+    console.log('[CHECKOUT] Usuario resuelto:', { email, user_id })
 
     if (!plan || !monto || !titulo) {
       return Response.json({ error: 'Faltan parámetros requeridos: plan, monto o titulo' }, { status: 400 })
