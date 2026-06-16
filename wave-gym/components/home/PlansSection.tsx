@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Check, Star, Lock, Zap } from 'lucide-react';
 import { useRealtimeCupos } from '@/hooks/useRealtimeCupos';
+import { useState } from 'react';
 
 const planes = [
   {
@@ -48,6 +49,33 @@ const fmt = (n: number) =>
 export default function PlansSection() {
   const { cuposDisponibles, totalCupos, cuposVendidos, porcentaje } = useRealtimeCupos();
   const agotado = cuposDisponibles <= 0;
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: any) => {
+    try {
+      setLoadingPlan(plan.id);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: plan.id,
+          monto: plan.precio,
+          titulo: plan.nombre
+        })
+      });
+      const data = await res.json();
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        alert('Error al procesar el pago');
+        setLoadingPlan(null);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error al procesar el pago');
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <section id="planes" className="relative py-28 px-6 md:px-12 lg:px-20 overflow-hidden bg-[#050505]">
@@ -142,16 +170,19 @@ export default function PlansSection() {
                 {/* CTA */}
                 <button
                   id={`btn-${plan.id}`}
-                  disabled={agotado}
+                  disabled={agotado || loadingPlan === plan.id}
+                  onClick={() => handleCheckout(plan)}
                   className={`w-full font-heading font-black text-[11px] tracking-[0.2em] uppercase py-4 transition-all duration-300 border ${
                     agotado
                       ? 'bg-transparent border-white/5 text-[#333] cursor-not-allowed'
+                      : loadingPlan === plan.id
+                      ? 'bg-transparent border-white/5 text-[#888] cursor-wait'
                       : plan.destacado
                       ? 'btn-gold border-transparent'
                       : 'bg-transparent border-white/10 text-white hover:border-[#C9A84C] hover:text-[#C9A84C] group-hover:border-[#C9A84C]'
                   }`}
                 >
-                  {agotado ? 'AGOTADO' : 'ELEGIR PLAN →'}
+                  {agotado ? 'AGOTADO' : loadingPlan === plan.id ? 'PROCESANDO...' : 'ELEGIR PLAN →'}
                 </button>
               </div>
             </motion.div>
