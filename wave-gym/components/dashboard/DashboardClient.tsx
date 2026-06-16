@@ -31,7 +31,7 @@ export default function DashboardClient({ adminNombre, clientes, ventas, colabor
   const ventasAprobadas = ventas.filter((v) => v.estado === 'aprobado' || v.estado === 'approved');
   const totalIngresos = ventasAprobadas.reduce((s, v) => s + (v.monto || 0), 0);
   const totalVentas = ventasAprobadas.length;
-  const clientesActivos = clientes.filter((c) => c.estado_pago === 'activo').length;
+  const clientesActivos = clientes.length;
 
   const fmt = (n: number) =>
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n);

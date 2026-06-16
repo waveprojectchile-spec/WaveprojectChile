@@ -25,10 +25,9 @@ export default async function DashboardPage() {
     { data: colaboradores }
   ] = await Promise.all([
     getSupabaseAdmin()
-      .from('profiles')
+      .from('clientes')
       .select('*')
-      .eq('role', 'cliente')
-      .order('created_at', { ascending: false }),
+      .order('fecha_pago', { ascending: false }),
     getSupabaseAdmin()
       .from('ventas')
       .select('*')

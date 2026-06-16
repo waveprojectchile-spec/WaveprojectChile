@@ -3,61 +3,39 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { cookies } = await import('next/headers')
-    const { createServerClient } = await import('@supabase/ssr')
-    const cookieStore = cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { get: (name: string) => cookieStore.get(name)?.value } }
-    )
-    const { data: { user } } = await supabase.auth.getUser()
-
     const body = await req.json()
-    const { plan, monto, titulo } = body
-    const email = user?.email || ''
-    const user_id = user?.id || null
+    const { plan, monto, titulo, nombre, rut, email, telefono } = body
 
-    if (!user_id) {
-      return NextResponse.json(
-        { error: 'Debes iniciar sesión para comprar' },
-        { status: 401 }
-      )
+    if (!plan || !monto || !titulo || !nombre || !rut || !email || !telefono) {
+      return NextResponse.json({ error: 'Faltan parámetros requeridos' }, { status: 400 })
     }
 
-    console.log('[CHECKOUT] Usuario resuelto:', { email, user_id })
+    const externalReferenceData = JSON.stringify({ plan, monto, nombre, rut, email, telefono })
 
-    if (!plan || !monto || !titulo) {
-      return Response.json({ error: 'Faltan parámetros requeridos: plan, monto o titulo' }, { status: 400 })
-    }
-
-    const externalReferenceData = JSON.stringify({ plan, user_id })
-
-    console.log('[CHECKOUT] Datos enviados a MP:', { 
-      plan, monto, titulo, email, userId: user_id, external_reference: externalReferenceData 
+    console.log('[CHECKOUT] Datos recibidos y enviados a MP:', { 
+      plan, monto, titulo, email, external_reference: externalReferenceData 
     })
 
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
     const preference = await new Preference(client).create({
       body: {
         items: [{ id: plan, title: `Wave Project Gym — Plan ${titulo}`, quantity: 1, unit_price: Number(monto), currency_id: 'CLP' }],
-        payer: email ? { email } : undefined,
+        payer: email ? { email, name: nombre } : undefined,
         external_reference: externalReferenceData,
         back_urls: {
-          success: 'https://waveproject-chile.vercel.app/gracias',
-          failure: 'https://waveproject-chile.vercel.app/planes',
-          pending: 'https://waveproject-chile.vercel.app/planes',
+          success: 'https://www.waveproject.cl/gracias',
+          failure: 'https://www.waveproject.cl/planes',
+          pending: 'https://www.waveproject.cl/planes',
         },
         auto_return: 'approved',
         notification_url: 'https://waveproject-chile.vercel.app/api/notify',
       },
     })
 
-    return Response.json({ id: preference.id, init_point: preference.init_point })
+    return NextResponse.json({ id: preference.id, init_point: preference.init_point })
   } catch (err: any) {
     console.error('[CHECKOUT ERROR]', err)
-    console.error('[CHECKOUT ERROR DETAILS]', JSON.stringify(err, null, 2))
-    return Response.json(
+    return NextResponse.json(
       { 
         error: 'Error al crear preferencia',
         details: process.env.NODE_ENV !== 'production' ? (err.cause || err.message || err) : undefined

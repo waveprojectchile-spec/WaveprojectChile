@@ -1,7 +1,9 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
+import { Resend } from 'resend'
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
   try {
@@ -15,56 +17,56 @@ export async function POST(req: Request) {
     const ref = JSON.parse(payment.external_reference || '{}')
     const paymentIdStr = String(payment.id)
 
-    // 1. Idempotencia: Verificar si ya existe la venta
-    const { data: existingVenta } = await getSupabaseAdmin()
-      .from('ventas')
+    // 1. Idempotencia: Verificar si ya existe en clientes
+    const { data: existingCliente } = await getSupabaseAdmin()
+      .from('clientes')
       .select('id')
       .eq('payment_id', paymentIdStr)
       .single()
 
-    console.log('[WEBHOOK] Venta ya existía?', !!existingVenta)
+    console.log('[WEBHOOK] Cliente ya existía?', !!existingCliente)
 
-    if (existingVenta) {
+    if (existingCliente) {
       console.log(`Webhook ignorado: Pago ${paymentIdStr} ya procesado.`)
       return new Response(null, { status: 200 })
     }
 
-    console.log('[WEBHOOK] Insertando venta:', { user_id: ref.user_id, plan: ref.plan, monto: payment.transaction_amount })
+    console.log('[WEBHOOK] Insertando nuevo cliente:', ref)
 
-    await getSupabaseAdmin().from('ventas').insert({
-      user_id: ref.user_id || null,
+    await getSupabaseAdmin().from('clientes').insert({
+      nombre: ref.nombre,
+      rut: ref.rut,
+      email: ref.email,
+      telefono: ref.telefono,
       plan: ref.plan,
-      monto: payment.transaction_amount,
-      estado: 'aprobado',
-      email: payment.payer?.email,
+      monto: ref.monto || payment.transaction_amount,
       payment_id: paymentIdStr,
     })
 
-    if (ref.user_id) {
-      await getSupabaseAdmin()
-        .from('profiles')
-        .update({ estado_pago: 'activo', fecha_pago: new Date().toISOString() })
-        .eq('id', ref.user_id)
+    // Enviar email al admin
+    try {
+      await resend.emails.send({
+        from: 'Wave Project Gym <onboarding@resend.dev>',
+        to: ['mpeg.logistica@gmail.com'],
+        subject: `Nuevo Pago Recibido - Plan ${ref.plan}`,
+        html: `
+          <h2>¡Nuevo cliente ha pagado un plan!</h2>
+          <ul>
+            <li><strong>Nombre:</strong> ${ref.nombre}</li>
+            <li><strong>RUT:</strong> ${ref.rut}</li>
+            <li><strong>Email:</strong> ${ref.email}</li>
+            <li><strong>Teléfono:</strong> ${ref.telefono}</li>
+            <li><strong>Plan:</strong> ${ref.plan}</li>
+            <li><strong>Monto:</strong> $${ref.monto || payment.transaction_amount}</li>
+            <li><strong>Payment ID:</strong> ${paymentIdStr}</li>
+          </ul>
+        `
+      })
+      console.log('[WEBHOOK] Email enviado a mpeg.logistica@gmail.com')
+    } catch (emailErr) {
+      console.error('[WEBHOOK] Error enviando email:', emailErr)
     }
 
-    // Decrementar stock preventa con concurrencia optimista
-    const { data: producto } = await getSupabaseAdmin()
-      .from('productos')
-      .select('id, stock')
-      .ilike('nombre', `%${ref.plan}%`)
-      .eq('es_preventa', true)
-      .single()
-
-    if (producto && producto.stock > 0) {
-      const nuevoStock = producto.stock - 1
-      const updateResult = await getSupabaseAdmin()
-        .from('productos')
-        .update({ stock: nuevoStock, activo: nuevoStock > 0 })
-        .eq('id', producto.id)
-        .eq('stock', producto.stock) // Concurrencia optimista
-        .gt('stock', 0) // Evitar negativos en carrera
-      console.log('[WEBHOOK] Stock decrementado. Producto:', producto?.id, 'Filas afectadas:', updateResult?.error ? 0 : 1)
-    }
   } catch (err) {
     console.error('Webhook error:', err)
   }

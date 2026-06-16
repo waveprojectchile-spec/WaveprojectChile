@@ -27,7 +27,7 @@ export default function ClientesSection({ clientes }: Props) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                {['NOMBRE', 'RUT', 'EMAIL', 'PLAN', 'ESTADO', 'FECHA'].map((h) => (
+                {['NOMBRE', 'RUT', 'EMAIL', 'PLAN', 'MONTO', 'ESTADO', 'FECHA PAGO'].map((h) => (
                   <th key={h} className="text-left px-5 py-3 font-heading text-[9px] tracking-[0.2em] text-[#444] uppercase">{h}</th>
                 ))}
               </tr>
@@ -43,17 +43,14 @@ export default function ClientesSection({ clientes }: Props) {
                   <td className="px-5 py-3 font-body text-[11px] text-[#666]">{c.rut || '—'}</td>
                   <td className="px-5 py-3 font-body text-[11px] text-[#666]">{c.email || '—'}</td>
                   <td className="px-5 py-3 font-heading text-[10px] text-white tracking-wider uppercase">{c.plan || '—'}</td>
+                  <td className="px-5 py-3 font-body text-[11px] text-[#666]">${c.monto || 0}</td>
                   <td className="px-5 py-3">
-                    <span className={`inline-block px-2 py-0.5 font-heading text-[9px] tracking-widest uppercase ${
-                      c.estado_pago === 'activo'
-                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                    }`}>
-                      {c.estado_pago || 'inactivo'}
+                    <span className="inline-block px-2 py-0.5 font-heading text-[9px] tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/20">
+                      ACTIVO
                     </span>
                   </td>
                   <td className="px-5 py-3 font-body text-[11px] text-[#555]">
-                    {c.created_at ? new Date(c.created_at).toLocaleDateString('es-CL') : '—'}
+                    {c.fecha_pago ? new Date(c.fecha_pago).toLocaleDateString('es-CL') : '—'}
                   </td>
                 </tr>
               ))}
@@ -76,13 +73,8 @@ export default function ClientesSection({ clientes }: Props) {
                 ['RUT', selected.rut],
                 ['Teléfono', selected.telefono],
                 ['Plan', selected.plan],
-                ['Estado', selected.estado_pago],
-                ['Peso', selected.peso ? `${selected.peso} kg` : null],
-                ['Altura', selected.altura ? `${selected.altura} cm` : null],
-                ['Objetivo', selected.objetivo],
-                ['Lesiones', selected.lesiones],
-                ['Condiciones médicas', selected.condiciones_medicas],
-                ['Contacto emergencia', selected.contacto_emergencia],
+                ['Monto Pagado', selected.monto ? `$${selected.monto}` : '—'],
+                ['Payment ID (MercadoPago)', selected.payment_id],
               ].map(([label, val]) => (
                 <div key={label as string}>
                   <div className="font-heading text-[9px] tracking-[0.2em] text-[#444] uppercase mb-1">{label}</div>

@@ -41,8 +41,8 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Rutas que requieren sesión
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/mi-cuenta')
+  // Rutas que requieren sesión (solo admin)
+  const isProtectedRoute = pathname.startsWith('/dashboard')
 
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
@@ -50,10 +50,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Si ya tiene sesión, evitar que entre al login o registro
-  if ((pathname.startsWith('/login') || pathname.startsWith('/registro')) && user) {
+  // Si ya tiene sesión, evitar que entre al login
+  if (pathname.startsWith('/login') && user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/mi-cuenta'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

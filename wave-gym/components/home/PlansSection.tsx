@@ -57,44 +57,8 @@ export default function PlansSection() {
   const agotado = cuposDisponibles <= 0;
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  const handleCheckout = async (plan: any) => {
-    try {
-      setLoadingPlan(plan.id);
-
-      // Verificar sesión primero
-      const { data: { session } } = await supabase.auth.getSession();
-
-      // Si no hay sesión, redirigir a registro con el plan seleccionado
-      if (!session) {
-        window.location.href = `/registro?plan=${plan.id}`;
-        return;
-      }
-
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan: plan.id,
-          monto: plan.precio,
-          titulo: plan.nombre,
-        })
-      });
-      const data = await res.json();
-
-      if (data.init_point) {
-        window.open(data.init_point, '_blank');
-        setLoadingPlan(null);
-      } else if (data.error === 'Debes iniciar sesión para comprar') {
-        window.location.href = `/registro?plan=${plan.id}`;
-      } else {
-        alert(data.error || 'Error al procesar el pago. Intenta de nuevo.');
-        setLoadingPlan(null);
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Error de conexión. Intenta de nuevo.');
-      setLoadingPlan(null);
-    }
+  const handleCheckout = (plan: any) => {
+    window.location.href = `/checkout?plan=${plan.id}`;
   };
 
   return (
