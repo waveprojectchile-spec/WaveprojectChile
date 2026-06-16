@@ -10,11 +10,17 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Faltan parámetros requeridos: plan, monto o titulo' }, { status: 400 })
     }
 
+    const externalReferenceData = JSON.stringify({ plan, user_id })
+
+    console.log('[CHECKOUT] Datos enviados a MP:', { 
+      plan, monto, titulo, email, userId: user_id, external_reference: externalReferenceData 
+    })
+
     const preference = await new Preference(client).create({
       body: {
         items: [{ id: plan, title: `Wave Project Gym — Plan ${titulo}`, quantity: 1, unit_price: Number(monto), currency_id: 'CLP' }],
         payer: email ? { email } : undefined,
-        external_reference: JSON.stringify({ plan, user_id }),
+        external_reference: externalReferenceData,
         back_urls: {
           success: 'https://waveproject-chile.vercel.app/gracias',
           failure: 'https://waveproject-chile.vercel.app/planes',
