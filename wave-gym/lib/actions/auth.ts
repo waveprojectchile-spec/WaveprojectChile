@@ -53,9 +53,12 @@ export async function registerAction(formData: FormData) {
   )
 
   const { data, error } = await supabase.auth.signUp({ email, password })
-  if (error || !data.user) return { error: error?.message || 'Error al crear usuario' }
+  if (error || !data.user) {
+    const errorMsg = error?.message || 'Error desconocido';
+    return { error: typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg) }
+  }
 
-  await getSupabaseAdmin().from('profiles').insert({
+  const { error: profileError } = await getSupabaseAdmin().from('profiles').insert({
     id: data.user.id,
     role: 'cliente',
     nombre, rut, telefono, fecha_nacimiento, edad,
@@ -64,5 +67,9 @@ export async function registerAction(formData: FormData) {
     estado_pago: 'pendiente',
   })
 
-  redirect('/confirmar-email')
+  if (profileError) {
+    console.error('Error insertando perfil:', profileError)
+  }
+
+  redirect('/mi-cuenta')
 }
