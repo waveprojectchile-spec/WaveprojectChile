@@ -90,6 +90,9 @@ export default function CheckoutPage() {
         direccion: formData.get('direccion'),
         ciudad: formData.get('ciudad'),
         region: formData.get('region'),
+        contacto_emergencia_nombre: formData.get('contacto_emergencia_nombre'),
+        contacto_emergencia_telefono: formData.get('contacto_emergencia_telefono'),
+        contacto_emergencia_relacion: formData.get('contacto_emergencia_relacion'),
         enfermedades: medicos.enfermedades ? formData.get('enfermedades') : '',
         operaciones: medicos.operaciones ? formData.get('operaciones') : '',
         medicamentos: medicos.medicamentos ? formData.get('medicamentos') : '',
@@ -166,6 +169,16 @@ export default function CheckoutPage() {
                     {REGIONES.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
+              </div>
+            </div>
+
+            {/* CONTACTO DE EMERGENCIA */}
+            <div className="bg-black border border-white/5 p-8">
+              <h2 className="text-sm font-black tracking-[0.2em] text-white uppercase border-b border-white/10 pb-4 mb-6">CONTACTO DE EMERGENCIA</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="md:col-span-2"><label className={labelClass}>NOMBRE DEL CONTACTO</label><input name="contacto_emergencia_nombre" type="text" placeholder="Ej: María López" required className={inputClass} /></div>
+                <div><label className={labelClass}>TELÉFONO DEL CONTACTO</label><input name="contacto_emergencia_telefono" type="tel" placeholder="+56 9 8765 4321" required className={inputClass} /></div>
+                <div><label className={labelClass}>RELACIÓN / PARENTESCO</label><input name="contacto_emergencia_relacion" type="text" placeholder="Ej: Madre, Pareja, etc." required className={inputClass} /></div>
               </div>
             </div>
 

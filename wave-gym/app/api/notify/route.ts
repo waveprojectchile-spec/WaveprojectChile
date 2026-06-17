@@ -95,6 +95,11 @@ export async function POST(req: Request) {
           <p><strong>Operaciones o cirugías:</strong> ${cliente.operaciones || 'Ninguna'}</p>
           <p><strong>Medicamentos actuales:</strong> ${cliente.medicamentos || 'Ninguno'}</p>
           <p><strong>Lesiones activas:</strong> ${cliente.lesiones || 'Ninguna'}</p>
+          <br/>
+          <h3>Contacto de Emergencia</h3>
+          <p><strong>Nombre:</strong> ${cliente.contacto_emergencia_nombre || 'No registrado'}</p>
+          <p><strong>Teléfono:</strong> ${cliente.contacto_emergencia_telefono || 'No registrado'}</p>
+          <p><strong>Relación:</strong> ${cliente.contacto_emergencia_relacion || 'No registrado'}</p>
         `
       })
       console.log('[WEBHOOK] Email enviado a waveprojectchile@gmail.com')

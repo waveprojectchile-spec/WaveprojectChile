@@ -5,7 +5,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { plan, monto, titulo, nombre, rut, email, telefono, fecha_nacimiento, direccion, ciudad, region, enfermedades, operaciones, medicamentos, lesiones } = body
+    const { plan, monto, titulo, nombre, rut, email, telefono, fecha_nacimiento, direccion, ciudad, region, enfermedades, operaciones, medicamentos, lesiones, contacto_emergencia_nombre, contacto_emergencia_telefono, contacto_emergencia_relacion } = body
 
     if (!plan || !monto || !titulo || !nombre || !rut || !email || !telefono) {
       return NextResponse.json({ error: 'Faltan parámetros requeridos' }, { status: 400 })
@@ -25,6 +25,9 @@ export async function POST(req: Request) {
         direccion,
         ciudad,
         region,
+        contacto_emergencia_nombre,
+        contacto_emergencia_telefono,
+        contacto_emergencia_relacion,
         enfermedades,
         operaciones,
         medicamentos,
