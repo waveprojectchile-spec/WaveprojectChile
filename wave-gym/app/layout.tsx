@@ -3,14 +3,14 @@ import './globals.css';
 import { LangProvider } from '@/lib/i18n/LangContext';
 
 export const metadata: Metadata = {
-  title: 'Wave Project Gym — 1ª Preventa Oficial | Concón, Chile',
+  title: 'Wave Project Gym — 2ª Preventa Oficial | Concón, Chile',
   description:
-    'Asegura tu cupo en la 1ª preventa oficial de Wave Project Gym. Solo 50 cupos disponibles. Planes desde $32.990 CLP. Calle 6 235, Concón. Movimiento · Disciplina · Propósito.',
+    'Asegura tu cupo en la 2ª preventa oficial de Wave Project Gym. Solo 50 cupos disponibles. Planes desde $32.990 CLP. Calle 6 235, Concón. Movimiento · Disciplina · Propósito.',
   keywords: ['gimnasio', 'Concón', 'preventa', 'gym', 'Wave Project', 'membresía', 'Valparaíso'],
   openGraph: {
-    title: 'Wave Project Gym — 1ª Preventa Oficial',
+    title: 'Wave Project Gym — 2ª Preventa Oficial',
     description: 'Solo 50 cupos. Precio especial de lanzamiento. Asegura el tuyo.',
-    url: 'https://waveprojectgym.cl',
+    url: 'https://waveproject.cl',
     siteName: 'Wave Project Gym',
     images: [{ url: '/wave-logo.png', width: 1254, height: 1254, alt: 'Wave Project Gym' }],
     locale: 'es_CL',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Wave Project Gym — 1ª Preventa Oficial',
+    title: 'Wave Project Gym — 2ª Preventa Oficial',
     description: 'Solo 50 cupos. Precio especial de lanzamiento. Asegura el tuyo.',
     images: ['/wave-logo.png'],
   },
