@@ -2,12 +2,12 @@ import type { Dict } from './dictionaries';
 
 export const en: Dict = {
   nav: {
-    pretitle: '1ST OFFICIAL PRE-SALE', cta: 'BUY PRE-SALE',
+    pretitle: '2ND OFFICIAL PRE-SALE', cta: 'BUY PRE-SALE',
     home: 'HOME', plans: 'PLANS', benefits: 'BENEFITS', faq: 'FAQ', contact: 'CONTACT', renew: 'RENEW',
     langLabel: 'IDIOMA / LANGUAGE',
   },
   hero: {
-    badge: '1ST OFFICIAL PRE-SALE — CONCÓN, CHILE',
+    badge: '2ND OFFICIAL PRE-SALE — CONCÓN, CHILE',
     tagline: 'MOVEMENT · DISCIPLINE · PURPOSE',
     desc1: 'Join the gym that transforms your body, your mind and your purpose.',
     desc2: ' Only 50 spots available.',

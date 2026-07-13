@@ -2,12 +2,12 @@ import type { Dict } from './dictionaries';
 
 export const es: Dict = {
   nav: {
-    pretitle: '1ª PREVENTA OFICIAL', cta: 'COMPRAR PREVENTA',
+    pretitle: '2ª PREVENTA OFICIAL', cta: 'COMPRAR PREVENTA',
     home: 'INICIO', plans: 'PLANES', benefits: 'BENEFICIOS', faq: 'FAQ', contact: 'CONTACTO', renew: 'RENOVAR',
     langLabel: 'IDIOMA / LANGUAGE',
   },
   hero: {
-    badge: '1ª PREVENTA OFICIAL — CONCÓN, CHILE',
+    badge: '2ª PREVENTA OFICIAL — CONCÓN, CHILE',
     tagline: 'MOVIMIENTO · DISCIPLINA · PROPÓSITO',
     desc1: 'Accede al gimnasio que transforma tu cuerpo, tu mente y tu propósito.',
     desc2: ' Solo 50 cupos disponibles.',

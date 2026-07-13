@@ -2,12 +2,12 @@ import type { Dict } from './dictionaries';
 
 export const pt: Dict = {
   nav: {
-    pretitle: '1ª PRÉ-VENDA OFICIAL', cta: 'COMPRAR PRÉ-VENDA',
+    pretitle: '2ª PRÉ-VENDA OFICIAL', cta: 'COMPRAR PRÉ-VENDA',
     home: 'INÍCIO', plans: 'PLANOS', benefits: 'BENEFÍCIOS', faq: 'FAQ', contact: 'CONTATO', renew: 'RENOVAR',
     langLabel: 'IDIOMA / LANGUAGE',
   },
   hero: {
-    badge: '1ª PRÉ-VENDA OFICIAL — CONCÓN, CHILE',
+    badge: '2ª PRÉ-VENDA OFICIAL — CONCÓN, CHILE',
     tagline: 'MOVIMENTO · DISCIPLINA · PROPÓSITO',
     desc1: 'Acesse a academia que transforma seu corpo, sua mente e seu propósito.',
     desc2: ' Apenas 50 vagas disponíveis.',
