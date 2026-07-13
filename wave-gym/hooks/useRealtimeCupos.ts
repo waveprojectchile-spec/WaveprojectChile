@@ -21,21 +21,16 @@ export function useRealtimeCupos(): CuposData {
 
   const fetchCupos = async () => {
     try {
-      const res = await fetch(`/api/cupos?t=${Date.now()}`, {
-        cache: 'no-store',
-        headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' },
-      });
-      if (!res.ok) {
-        console.warn('[cupos] fetch failed:', res.status);
-        return;
-      }
+      // POST nunca es cacheado por browser ni Vercel CDN
+      const res = await fetch('/api/cupos', { method: 'POST' });
+      if (!res.ok) return;
       const data = await res.json();
       if (mountedRef.current) {
         setCuposVendidos(data.cupos_vendidos ?? 0);
         setTotalCupos(data.total_cupos     ?? 50);
       }
-    } catch (e) {
-      console.error('[cupos] error:', e);
+    } catch {
+      // mantener valores actuales
     }
   };
 
