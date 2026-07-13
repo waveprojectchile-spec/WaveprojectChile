@@ -3,7 +3,7 @@ import type { Dict } from './dictionaries';
 export const pt: Dict = {
   nav: {
     pretitle: '1ª PRÉ-VENDA OFICIAL', cta: 'COMPRAR PRÉ-VENDA',
-    home: 'INÍCIO', plans: 'PLANOS', benefits: 'BENEFÍCIOS', faq: 'FAQ', contact: 'CONTATO',
+    home: 'INÍCIO', plans: 'PLANOS', benefits: 'BENEFÍCIOS', faq: 'FAQ', contact: 'CONTATO', renew: 'RENOVAR',
     langLabel: 'IDIOMA / LANGUAGE',
   },
   hero: {

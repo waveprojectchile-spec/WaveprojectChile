@@ -1,7 +1,7 @@
 export type Lang = 'ES' | 'EN' | 'PT';
 
 export interface Dict {
-  nav: { pretitle: string; cta: string; home: string; plans: string; benefits: string; faq: string; contact: string; langLabel: string };
+  nav: { pretitle: string; cta: string; home: string; plans: string; benefits: string; faq: string; contact: string; renew: string; langLabel: string };
   hero: {
     badge: string; tagline: string; desc1: string; desc2: string;
     ctaBuy: string; ctaPlans: string;

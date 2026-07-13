@@ -99,6 +99,7 @@ export default function Navbar() {
     { label: d.nav.benefits, href: '#beneficios' },
     { label: d.nav.faq,      href: '#faq' },
     { label: d.nav.contact,  href: '#contacto' },
+    { label: d.nav.renew,    href: '/renovar', highlight: true },
   ];
 
   useEffect(() => {
@@ -190,6 +191,24 @@ export default function Navbar() {
             <nav className="hidden lg:flex items-stretch h-full">
               {navLinks.map(link => {
                 const isActive = activeHref === link.href;
+                if (link.highlight) {
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="flex items-center px-5 h-[70px]"
+                      style={{
+                        fontFamily: BC, fontWeight: 800, fontSize: '11px', letterSpacing: '0.2em',
+                        color: 'rgb(var(--accent))',
+                        borderBottom: '2px solid rgb(var(--accent)/0.4)',
+                      }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--accent))'; }}
+                    >
+                      {link.label}
+                    </a>
+                  );
+                }
                 return (
                   <a
                     key={link.href}

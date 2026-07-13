@@ -3,7 +3,7 @@ import type { Dict } from './dictionaries';
 export const es: Dict = {
   nav: {
     pretitle: '1ª PREVENTA OFICIAL', cta: 'COMPRAR PREVENTA',
-    home: 'INICIO', plans: 'PLANES', benefits: 'BENEFICIOS', faq: 'FAQ', contact: 'CONTACTO',
+    home: 'INICIO', plans: 'PLANES', benefits: 'BENEFICIOS', faq: 'FAQ', contact: 'CONTACTO', renew: 'RENOVAR',
     langLabel: 'IDIOMA / LANGUAGE',
   },
   hero: {
