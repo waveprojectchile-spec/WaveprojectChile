@@ -8,7 +8,7 @@ export async function GET() {
 
     const { data, error } = await getSupabaseAdmin()
       .from('cupos_config')
-      .select('cupos_vendidos, total_cupos')
+      .select('id, cupos_vendidos, total_cupos')
       .eq('activo', true)
       .single()
 
@@ -21,7 +21,7 @@ export async function GET() {
 
     return Response.json(
       { ...data, _debug: { hasServiceKey } },
-      { headers: { 'Cache-Control': 'no-store' } }
+      { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'Pragma': 'no-cache', 'x-vercel-cache': 'MISS' } }
     )
   } catch (e: any) {
     return Response.json(

@@ -22,8 +22,9 @@ export default function ContadorSection({ cuposVendidos, totalCupos }: Props) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const dispInicial = Math.max(0, totalCupos - cuposVendidos);
-  const dirty = disponibles !== dispInicial || total !== totalCupos;
+  const [guardadoDisp, setGuardadoDisp] = useState(Math.max(0, totalCupos - cuposVendidos));
+  const [guardadoTotal, setGuardadoTotal] = useState(totalCupos);
+  const dirty = disponibles !== guardadoDisp || total !== guardadoTotal;
   const clampDisp = (v: number) => Math.min(Math.max(0, Math.floor(v || 0)), total);
 
   const guardar = async () => {
@@ -39,10 +40,13 @@ export default function ContadorSection({ cuposVendidos, totalCupos }: Props) {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      const nuevoDisp = Math.max(0, (data.total_cupos ?? total) - (data.cupos_vendidos ?? vendidos));
-      setTotal(data.total_cupos ?? total);
+      const nuevoTotal = data.total_cupos ?? total;
+      const nuevoDisp = Math.max(0, nuevoTotal - (data.cupos_vendidos ?? vendidos));
+      setTotal(nuevoTotal);
       setDisponibles(nuevoDisp);
-      setMsg({ ok: true, text: 'Contador actualizado. Ya se ve en el inicio en tiempo real.' });
+      setGuardadoTotal(nuevoTotal);
+      setGuardadoDisp(nuevoDisp);
+      setMsg({ ok: true, text: `Guardado: ${nuevoDisp} cupos disponibles de ${nuevoTotal}. Actualizando el home...` });
       notifyCuposUpdated();
     } catch (err: any) {
       setMsg({ ok: false, text: err.message || 'Error al actualizar el contador' });
@@ -136,7 +140,7 @@ export default function ContadorSection({ cuposVendidos, totalCupos }: Props) {
         </button>
         {dirty && !saving && (
           <button
-            onClick={() => { setDisponibles(dispInicial); setTotal(totalCupos); setMsg(null); }}
+            onClick={() => { setDisponibles(guardadoDisp); setTotal(guardadoTotal); setMsg(null); }}
             className="flex items-center gap-2 px-4 py-3 border border-white/10 text-chalk-muted font-heading text-[10px] tracking-widest uppercase hover:text-white transition-colors"
           >
             <RotateCcw size={13} />
