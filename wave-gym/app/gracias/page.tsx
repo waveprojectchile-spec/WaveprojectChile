@@ -45,20 +45,20 @@ export default function GraciasPage() {
           </h2>
 
           <p className="text-chalk-muted text-sm leading-relaxed mb-10 max-w-md">
-            ¡Gracias por ser parte de Wave Project Gym! Tu lugar en la preventa está asegurado.
+            ¡Gracias por ser parte de Wave Project Gym! Tu cupo está asegurado y el gimnasio ya está abierto.
             <br /><br />
-            Nuestro equipo se pondrá en contacto contigo a la brevedad para coordinar los detalles. ¡Nos vemos pronto!
+            Preséntate en Calle 6 235, Concón con tu RUT y comenzamos. ¡Nos vemos en la cancha!
           </p>
 
           {/* Cards de info */}
           <div className="grid sm:grid-cols-2 gap-4 w-full mb-10">
 
-            {/* Fecha apertura */}
+            {/* Apertura */}
             <div className="bg-ink-900 border border-accent-line p-6 flex flex-col items-center gap-3">
               <Calendar size={24} className="text-accent" />
-              <p className="text-[10px] font-black tracking-[0.25em] text-chalk-faint uppercase">Fecha de Apertura</p>
-              <p className="text-2xl font-black text-white uppercase tracking-wider">Próximamente</p>
-              <p className="text-accent text-xs font-bold tracking-widest">Te avisaremos por correo</p>
+              <p className="text-[10px] font-black tracking-[0.25em] text-chalk-faint uppercase">Estado</p>
+              <p className="text-2xl font-black text-white uppercase tracking-wider">¡ABIERTO!</p>
+              <p className="text-accent text-xs font-bold tracking-widest">Ya puedes entrenar con nosotros</p>
             </div>
 
             {/* Ubicación */}
