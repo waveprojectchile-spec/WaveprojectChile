@@ -1,11 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Users, LogOut, Gauge, Tag } from 'lucide-react';
+import { BarChart3, Users, LogOut, Gauge, Tag, RefreshCw } from 'lucide-react';
 import VentasSection from './VentasSection';
 import ClientesSection from './ClientesSection';
 import ContadorSection from './ContadorSection';
+import RenovacionesSection from './RenovacionesSection';
 
-type Section = 'ventas' | 'clientes' | 'contador' | 'preventa1' | 'preventa2';
+type Section = 'ventas' | 'clientes' | 'contador' | 'preventa1' | 'preventa2' | 'renovaciones';
 
 interface Props {
   adminNombre: string;
@@ -19,9 +20,10 @@ const CORTE_P1 = new Date('2026-07-12T23:59:59-04:00');
 const NAV = [
   { id: 'clientes'  as Section, label: 'CLIENTES',    icon: Users },
   { id: 'ventas'    as Section, label: 'VENTAS',       icon: BarChart3 },
-  { id: 'preventa1' as Section, label: 'PREVENTA 1',   icon: Tag },
-  { id: 'preventa2' as Section, label: 'PREVENTA 2',   icon: Tag },
-  { id: 'contador'  as Section, label: 'CONTADOR',     icon: Gauge },
+  { id: 'preventa1'    as Section, label: 'PREVENTA 1',    icon: Tag },
+  { id: 'preventa2'    as Section, label: 'PREVENTA 2',    icon: Tag },
+  { id: 'renovaciones' as Section, label: 'RENOVACIONES',  icon: RefreshCw },
+  { id: 'contador'     as Section, label: 'CONTADOR',      icon: Gauge },
 ];
 
 export default function DashboardClient({ adminNombre, clientes, cuposConfig }: Props) {
@@ -108,12 +110,13 @@ export default function DashboardClient({ adminNombre, clientes, cuposConfig }: 
             badge="P2"
           />
         )}
-        {section === 'contador'  && (
+        {section === 'contador'      && (
           <ContadorSection
             cuposVendidos={cuposConfig.cupos_vendidos}
             totalCupos={cuposConfig.total_cupos}
           />
         )}
+        {section === 'renovaciones'  && <RenovacionesSection clientes={ventasAprobadas} />}
       </main>
     </div>
   );
