@@ -30,7 +30,6 @@ export function useRealtimeCupos(): CuposData {
         return;
       }
       const data = await res.json();
-      console.log('[cupos]', data);
       if (mountedRef.current) {
         setCuposVendidos(data.cupos_vendidos ?? 0);
         setTotalCupos(data.total_cupos     ?? 50);
