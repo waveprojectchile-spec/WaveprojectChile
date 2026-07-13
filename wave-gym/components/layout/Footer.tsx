@@ -34,8 +34,8 @@ export default function Footer() {
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2 flex flex-col gap-5">
             <a href="#inicio" className="flex items-center gap-3 group w-fit" aria-label="Wave Project Gym — inicio">
-              <Image src="/wave-icon-white.png" alt="Wave Project Gym" width={40} height={40}
-                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300" />
+              <Image src="/wave-icon-white.png" alt="Wave Project Gym" width={56} height={56}
+                className="w-14 h-14 object-contain group-hover:scale-105 transition-transform duration-300" />
               <div>
                 <div className="font-display text-white text-base tracking-[0.22em] leading-none">WAVE PROJECT</div>
                 <div className="font-heading text-chalk-faint text-[9px] tracking-[0.5em] mt-1">GYM</div>

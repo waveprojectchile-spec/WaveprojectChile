@@ -173,10 +173,10 @@ export default function Navbar() {
               <Image
                 src="/wave-icon-white.png"
                 alt="Wave Project Gym"
-                width={40}
-                height={40}
+                width={56}
+                height={56}
                 priority
-                className="w-9 h-9 md:w-10 md:h-10 object-contain transition-transform duration-300 group-hover:scale-110"
+                className="w-12 h-12 md:w-14 md:h-14 object-contain transition-transform duration-300 group-hover:scale-110"
               />
               <div className="flex flex-col leading-none">
                 <span className="text-white" style={{ fontFamily: BC, fontWeight: 800, fontSize: '19px', letterSpacing: '0.14em' }}>
@@ -311,7 +311,7 @@ export default function Navbar() {
             >
               <div className="flex items-center justify-between h-[70px] px-6 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2.5">
-                  <Image src="/wave-icon-white.png" alt="Wave Project Gym" width={32} height={32} className="w-8 h-8 object-contain" />
+                  <Image src="/wave-icon-white.png" alt="Wave Project Gym" width={48} height={48} className="w-12 h-12 object-contain" />
                   <span className="text-white" style={{ fontFamily: BC, fontWeight: 800, fontSize: '20px', letterSpacing: '0.12em' }}>
                     WAVE PROJECT
                   </span>
