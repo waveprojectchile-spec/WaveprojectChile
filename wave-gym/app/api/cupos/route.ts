@@ -1,5 +1,8 @@
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
+// Fuerza ejecución dinámica en cada request — nunca cachear en Vercel/Next.js
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const { data, error } = await getSupabaseAdmin()
