@@ -21,19 +21,22 @@ export function useRealtimeCupos(): CuposData {
 
   const fetchCupos = async () => {
     try {
-      // Cache-buster en la URL para garantizar que Vercel CDN no sirva respuesta cacheada
       const res = await fetch(`/api/cupos?t=${Date.now()}`, {
         cache: 'no-store',
         headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' },
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        console.warn('[cupos] fetch failed:', res.status);
+        return;
+      }
       const data = await res.json();
+      console.log('[cupos]', data);
       if (mountedRef.current) {
         setCuposVendidos(data.cupos_vendidos ?? 0);
         setTotalCupos(data.total_cupos     ?? 50);
       }
-    } catch {
-      // mantener valores actuales
+    } catch (e) {
+      console.error('[cupos] error:', e);
     }
   };
 
