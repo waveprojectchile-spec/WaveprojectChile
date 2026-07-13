@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Users, LogOut, Gauge } from 'lucide-react';
+import { BarChart3, Users, LogOut, Gauge, Tag } from 'lucide-react';
 import VentasSection from './VentasSection';
 import ClientesSection from './ClientesSection';
 import ContadorSection from './ContadorSection';
 
-type Section = 'ventas' | 'clientes' | 'contador';
+type Section = 'ventas' | 'clientes' | 'contador' | 'preventa1' | 'preventa2';
 
 interface Props {
   adminNombre: string;
@@ -13,10 +13,15 @@ interface Props {
   cuposConfig: { cupos_vendidos: number; total_cupos: number };
 }
 
+// Preventa 1: hasta el 12/07/2026 23:59:59 Chile (UTC-4)
+const CORTE_P1 = new Date('2026-07-12T23:59:59-04:00');
+
 const NAV = [
-  { id: 'clientes' as Section, label: 'CLIENTES', icon: Users },
-  { id: 'ventas' as Section, label: 'VENTAS', icon: BarChart3 },
-  { id: 'contador' as Section, label: 'CONTADOR', icon: Gauge },
+  { id: 'clientes'  as Section, label: 'CLIENTES',    icon: Users },
+  { id: 'ventas'    as Section, label: 'VENTAS',       icon: BarChart3 },
+  { id: 'preventa1' as Section, label: 'PREVENTA 1',   icon: Tag },
+  { id: 'preventa2' as Section, label: 'PREVENTA 2',   icon: Tag },
+  { id: 'contador'  as Section, label: 'CONTADOR',     icon: Gauge },
 ];
 
 export default function DashboardClient({ adminNombre, clientes, cuposConfig }: Props) {
@@ -25,7 +30,17 @@ export default function DashboardClient({ adminNombre, clientes, cuposConfig }: 
   const ventasAprobadas = clientes.filter((c) => c.estado_pago === 'aprobado');
   const totalIngresos = ventasAprobadas.reduce((s, c) => s + (c.monto || 0), 0);
   const totalVentas = ventasAprobadas.length;
-  const clientesActivos = ventasAprobadas.length; // Solo consideramos activos a los que pagaron
+  const clientesActivos = ventasAprobadas.length;
+
+  // Segmentación por fecha de pago
+  const clientesPreventa1 = ventasAprobadas.filter((c) => {
+    if (!c.fecha_pago) return false;
+    return new Date(c.fecha_pago) <= CORTE_P1;
+  });
+  const clientesPreventa2 = ventasAprobadas.filter((c) => {
+    if (!c.fecha_pago) return false;
+    return new Date(c.fecha_pago) > CORTE_P1;
+  });
 
   const fmt = (n: number) =>
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n);
@@ -62,13 +77,13 @@ export default function DashboardClient({ adminNombre, clientes, cuposConfig }: 
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* Main */}
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'INGRESOS TOTALES', value: fmt(totalIngresos) },
-            { label: 'VENTAS APROBADAS', value: String(totalVentas) },
-            { label: 'CLIENTES ACTIVOS', value: String(clientesActivos) },
+            { label: 'INGRESOS TOTALES',  value: fmt(totalIngresos) },
+            { label: 'VENTAS APROBADAS',  value: String(totalVentas) },
+            { label: 'CLIENTES ACTIVOS',  value: String(clientesActivos) },
           ].map((m) => (
             <div key={m.label} className="border border-hair bg-ink-900 p-5">
               <div className="font-heading text-[9px] tracking-[0.2em] text-chalk-faint uppercase">{m.label}</div>
@@ -77,9 +92,23 @@ export default function DashboardClient({ adminNombre, clientes, cuposConfig }: 
           ))}
         </div>
 
-        {section === 'ventas' && <VentasSection ventas={clientes} fmt={fmt} />}
-        {section === 'clientes' && <ClientesSection clientes={ventasAprobadas} />}
-        {section === 'contador' && (
+        {section === 'ventas'    && <VentasSection ventas={clientes} fmt={fmt} />}
+        {section === 'clientes'  && <ClientesSection clientes={ventasAprobadas} titulo="TODOS LOS CLIENTES" />}
+        {section === 'preventa1' && (
+          <ClientesSection
+            clientes={clientesPreventa1}
+            titulo="PREVENTA 1 — hasta 12/07/2026"
+            badge="P1"
+          />
+        )}
+        {section === 'preventa2' && (
+          <ClientesSection
+            clientes={clientesPreventa2}
+            titulo="PREVENTA 2 — 13/07 al 31/07/2026"
+            badge="P2"
+          />
+        )}
+        {section === 'contador'  && (
           <ContadorSection
             cuposVendidos={cuposConfig.cupos_vendidos}
             totalCupos={cuposConfig.total_cupos}

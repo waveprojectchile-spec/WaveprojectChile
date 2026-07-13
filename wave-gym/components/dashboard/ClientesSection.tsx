@@ -4,9 +4,11 @@ import { X } from 'lucide-react';
 
 interface Props {
   clientes: any[];
+  titulo?: string;
+  badge?: string;
 }
 
-export default function ClientesSection({ clientes }: Props) {
+export default function ClientesSection({ clientes, titulo = 'CLIENTES', badge }: Props) {
   const [selected, setSelected] = useState<any>(null);
   const [filtro, setFiltro] = useState<string>('TODOS');
 
@@ -29,7 +31,14 @@ export default function ClientesSection({ clientes }: Props) {
     <>
       <div className="border border-white/5 bg-[#0A0A0A] overflow-hidden">
         <div className="p-5 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="font-heading font-bold text-xs tracking-[0.15em] text-white uppercase">Clientes ({clientesFiltrados.length})</div>
+          <div className="font-heading font-bold text-xs tracking-[0.15em] text-white uppercase flex items-center gap-3">
+            {badge && (
+              <span className="px-2 py-0.5 text-[9px] font-heading tracking-widest border border-accent/40 text-accent bg-accent/10">
+                {badge}
+              </span>
+            )}
+            {titulo} ({clientesFiltrados.length})
+          </div>
           
           <div className="flex flex-wrap gap-2">
             {PLANES.map(p => (
