@@ -8,13 +8,10 @@ interface CuposData {
   porcentaje: number;
 }
 
-// Canal compartido entre tabs del mismo origen (dashboard → home en la misma sesión)
-const CHANNEL_NAME = 'wave-cupos-update';
-
-// Intervalo normal y el agresivo que se activa justo después de una escritura
-const POLL_NORMAL_MS  = 5_000;
-const POLL_BURST_MS   = 1_000;  // 1s durante la ráfaga post-guardado
-const BURST_DURATION  = 8_000;  // 8s de ráfaga, luego vuelve al ritmo normal
+const CHANNEL_NAME   = 'wave-cupos-update';
+const POLL_NORMAL_MS = 5_000;
+const POLL_BURST_MS  = 1_000;
+const BURST_DURATION = 8_000;
 
 export function useRealtimeCupos(): CuposData {
   const [cuposVendidos, setCuposVendidos] = useState(0);
@@ -24,25 +21,28 @@ export function useRealtimeCupos(): CuposData {
 
   const fetchCupos = async () => {
     try {
-      const res = await fetch('/api/cupos', { cache: 'no-store' });
+      // Cache-buster en la URL para garantizar que Vercel CDN no sirva respuesta cacheada
+      const res = await fetch(`/api/cupos?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' },
+      });
       if (!res.ok) return;
       const data = await res.json();
       if (mountedRef.current) {
         setCuposVendidos(data.cupos_vendidos ?? 0);
-        setTotalCupos(data.total_cupos    ?? 50);
+        setTotalCupos(data.total_cupos     ?? 50);
       }
     } catch {
-      // mantener valores actuales — no crashear
+      // mantener valores actuales
     }
   };
 
-  const startPolling = (intervalMs: number) => {
+  const startPolling = (ms: number) => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(fetchCupos, intervalMs);
+    intervalRef.current = setInterval(fetchCupos, ms);
   };
 
   const activateBurst = () => {
-    // fetch inmediato + polling cada 1s por 8 segundos, luego vuelve a 5s
     fetchCupos();
     startPolling(POLL_BURST_MS);
     setTimeout(() => {
@@ -52,14 +52,9 @@ export function useRealtimeCupos(): CuposData {
 
   useEffect(() => {
     mountedRef.current = true;
-
-    // Carga inicial inmediata
     fetchCupos();
-
-    // Polling normal de base
     startPolling(POLL_NORMAL_MS);
 
-    // Escucha al dashboard: cuando guarda, activa ráfaga de polling
     let channel: BroadcastChannel | null = null;
     if (typeof BroadcastChannel !== 'undefined') {
       channel = new BroadcastChannel(CHANNEL_NAME);
@@ -82,11 +77,6 @@ export function useRealtimeCupos(): CuposData {
   };
 }
 
-/**
- * Llama esto desde ContadorSection después de un guardado exitoso.
- * Notifica a todos los tabs abiertos (incluyendo el home) para que
- * actualicen el contador de inmediato.
- */
 export function notifyCuposUpdated() {
   if (typeof BroadcastChannel !== 'undefined') {
     const ch = new BroadcastChannel(CHANNEL_NAME);
