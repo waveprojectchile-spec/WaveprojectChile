@@ -1,14 +1,15 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Users, LogOut, Gauge, Tag, RefreshCw, CalendarDays, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, LogOut, Gauge, Tag, RefreshCw, CalendarDays, TrendingUp, Package } from 'lucide-react';
 import VentasSection from './VentasSection';
 import ClientesSection from './ClientesSection';
 import ContadorSection from './ContadorSection';
 import RenovacionesSection from './RenovacionesSection';
 import PlanesSection from './PlanesSection';
 import BalanceSection from './BalanceSection';
+import InventarioSection from './InventarioSection';
 
-type Section = 'ventas' | 'clientes' | 'contador' | 'preventa1' | 'preventa2' | 'renovaciones' | 'planes' | 'balance';
+type Section = 'ventas' | 'clientes' | 'contador' | 'preventa1' | 'preventa2' | 'renovaciones' | 'planes' | 'balance' | 'inventario';
 
 interface Props {
   adminNombre: string;
@@ -24,6 +25,7 @@ const NAV = [
   { id: 'clientes'     as Section, label: 'CLIENTES',       icon: Users },
   { id: 'ventas'       as Section, label: 'VENTAS',         icon: BarChart3 },
   { id: 'planes'       as Section, label: 'PLANES',         icon: CalendarDays },
+  { id: 'inventario'   as Section, label: 'INVENTARIO',     icon: Package },
   { id: 'preventa1'    as Section, label: 'PREVENTA 1',     icon: Tag },
   { id: 'preventa2'    as Section, label: 'PREVENTA 2',     icon: Tag },
   { id: 'renovaciones' as Section, label: 'RENOVACIONES',   icon: RefreshCw },
@@ -123,6 +125,7 @@ export default function DashboardClient({ adminNombre, clientes, cuposConfig }: 
           />
         )}
         {section === 'renovaciones'  && <RenovacionesSection clientes={ventasAprobadas} />}
+        {section === 'inventario'    && <InventarioSection />}
       </main>
     </div>
   );
