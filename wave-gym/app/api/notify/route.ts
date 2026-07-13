@@ -21,6 +21,22 @@ export async function POST(req: Request) {
       return new Response(null, { status: 200 })
     }
 
+    // ── RENOVACIÓN ──────────────────────────────────────────────────────────
+    if (clientId.startsWith('renov:')) {
+      const realId = clientId.replace('renov:', '')
+      const { data: cli } = await getSupabaseAdmin()
+        .from('clientes').select('id, renovaciones_usadas').eq('id', realId).single()
+      if (cli) {
+        await getSupabaseAdmin()
+          .from('clientes')
+          .update({ renovaciones_usadas: (cli.renovaciones_usadas ?? 0) + 1 })
+          .eq('id', realId)
+        console.log('[WEBHOOK] Renovación registrada para cliente:', realId)
+      }
+      return new Response(null, { status: 200 })
+    }
+    // ── FIN RENOVACIÓN ───────────────────────────────────────────────────────
+
     const paymentIdStr = String(payment.id)
 
     // 1. Obtener cliente
