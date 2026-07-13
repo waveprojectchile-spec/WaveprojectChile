@@ -24,7 +24,7 @@ function validarRut(rut: string) {
   return dv === dvCalc;
 }
 
-type Estado = 'idle' | 'buscando' | 'encontrado' | 'no_encontrado' | 'pagando';
+type Estado = 'idle' | 'buscando' | 'encontrado' | 'no_encontrado';
 
 interface Membresia {
   id: string;
@@ -42,6 +42,7 @@ export default function RenovarPage() {
   const [rut, setRut] = useState('');
   const [rutError, setRutError] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
+  const [pagando, setPagando] = useState(false);
   const [membresia, setMembresia] = useState<Membresia | null>(null);
   const [apiError, setApiError] = useState('');
 
@@ -72,7 +73,7 @@ export default function RenovarPage() {
 
   const pagar = async () => {
     if (!membresia) return;
-    setEstado('pagando');
+    setPagando(true);
     try {
       const res = await fetch('/api/renovar/checkout', {
         method: 'POST',
@@ -84,11 +85,11 @@ export default function RenovarPage() {
         window.location.href = data.init_point;
       } else {
         setApiError(data.error || 'Error al iniciar el pago');
-        setEstado('encontrado');
+        setPagando(false);
       }
     } catch {
       setApiError('Error de conexión');
-      setEstado('encontrado');
+      setPagando(false);
     }
   };
 
@@ -206,10 +207,10 @@ export default function RenovarPage() {
                   {membresia.puede_renovar ? (
                     <button
                       onClick={pagar}
-                      disabled={estado === 'pagando'}
+                      disabled={pagando}
                       className="btn-accent w-full text-sm justify-center"
                     >
-                      {estado === 'pagando'
+                      {pagando
                         ? <><RefreshCw size={14} className="animate-spin" /> Redirigiendo...</>
                         : <><RefreshCw size={14} /> RENOVAR POR {fmt(membresia.monto)}</>
                       }
