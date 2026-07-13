@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Minus, Plus, Save, RotateCcw, Zap } from 'lucide-react';
 import { clampCupos } from '@/lib/preventa';
+import { notifyCuposUpdated } from '@/hooks/useRealtimeCupos';
 
 interface Props {
   cuposVendidos: number;
@@ -42,6 +43,7 @@ export default function ContadorSection({ cuposVendidos, totalCupos }: Props) {
       setTotal(data.total_cupos ?? total);
       setDisponibles(nuevoDisp);
       setMsg({ ok: true, text: 'Contador actualizado. Ya se ve en el inicio en tiempo real.' });
+      notifyCuposUpdated();
     } catch (err: any) {
       setMsg({ ok: false, text: err.message || 'Error al actualizar el contador' });
     }
