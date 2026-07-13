@@ -120,7 +120,7 @@ export default function CheckoutPage() {
     }
   }
 
-  const inputClass = "w-full bg-black border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#FFD600]/50 transition-colors"
+  const inputClass = "w-full bg-black border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-accent/50 transition-colors"
   const labelClass = "block text-[10px] font-black tracking-[0.2em] text-white/30 uppercase mb-1.5"
 
   return (
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
                 <div><label className={labelClass}>TELÉFONO</label><input name="telefono" type="tel" placeholder="+56 9 1234 5678" required className={inputClass} /></div>
                 
                 <div>
-                  <label className={labelClass}>FECHA DE NACIMIENTO {edad !== '' && <span className="text-[#FFD600] ml-2">{edad} años</span>}</label>
+                  <label className={labelClass}>FECHA DE NACIMIENTO {edad !== '' && <span className="text-accent ml-2">{edad} años</span>}</label>
                   <input name="fecha_nacimiento" type="date" required value={fechaNacimiento} onChange={e => setFechaNacimiento(e.target.value)} className={inputClass} />
                 </div>
                 <div><label className={labelClass}>DIRECCIÓN</label><input name="direccion" type="text" placeholder="Calle y número" required className={inputClass} /></div>
@@ -197,7 +197,7 @@ export default function CheckoutPage() {
                 ] as const).map(({ key, label, placeholder }) => (
                   <div key={key}>
                     <label className="flex items-center gap-3 cursor-pointer group">
-                      <div className={`w-5 h-5 border flex items-center justify-center flex-shrink-0 transition-all ${medicos[key] ? 'bg-[#FFD600] border-[#FFD600]' : 'bg-black border-white/20 hover:border-[#FFD600]/50'}`}
+                      <div className={`w-5 h-5 border flex items-center justify-center flex-shrink-0 transition-all ${medicos[key] ? 'bg-accent border-accent' : 'bg-black border-white/20 hover:border-accent/50'}`}
                         onClick={() => setMedicos(m => ({ ...m, [key]: !m[key] }))}>
                         {medicos[key] && <span className="text-black text-xs font-black">✓</span>}
                       </div>
@@ -207,7 +207,7 @@ export default function CheckoutPage() {
                       {medicos[key] && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                           <textarea name={key} placeholder={placeholder} rows={3}
-                            className="w-full mt-3 ml-8 bg-black border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#FFD600]/50 resize-none" />
+                            className="w-full mt-3 ml-8 bg-black border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-accent/50 resize-none" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
             </div>
 
             <button type="submit" disabled={isPending}
-              className="w-full py-4 bg-[#FFD600] text-black font-black text-sm tracking-[0.2em] uppercase hover:bg-[#FFD600]/90 transition-colors disabled:opacity-50">
+              className="w-full py-4 bg-accent text-black font-black text-sm tracking-[0.2em] uppercase hover:bg-accent/90 transition-colors disabled:opacity-50">
               {isPending ? 'PROCESANDO...' : 'IR A PAGAR →'}
             </button>
           </form>

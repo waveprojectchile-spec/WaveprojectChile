@@ -1,22 +1,25 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Users, LogOut } from 'lucide-react';
+import { BarChart3, Users, LogOut, Gauge } from 'lucide-react';
 import VentasSection from './VentasSection';
 import ClientesSection from './ClientesSection';
+import ContadorSection from './ContadorSection';
 
-type Section = 'ventas' | 'clientes';
+type Section = 'ventas' | 'clientes' | 'contador';
 
 interface Props {
   adminNombre: string;
   clientes: any[];
+  cuposConfig: { cupos_vendidos: number; total_cupos: number };
 }
 
 const NAV = [
   { id: 'clientes' as Section, label: 'CLIENTES', icon: Users },
   { id: 'ventas' as Section, label: 'VENTAS', icon: BarChart3 },
+  { id: 'contador' as Section, label: 'CONTADOR', icon: Gauge },
 ];
 
-export default function DashboardClient({ adminNombre, clientes }: Props) {
+export default function DashboardClient({ adminNombre, clientes, cuposConfig }: Props) {
   const [section, setSection] = useState<Section>('clientes');
 
   const ventasAprobadas = clientes.filter((c) => c.estado_pago === 'aprobado');
@@ -28,12 +31,12 @@ export default function DashboardClient({ adminNombre, clientes }: Props) {
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n);
 
   return (
-    <div className="min-h-screen bg-[#050505] flex">
+    <div className="min-h-screen bg-ink-950 flex">
       {/* Sidebar */}
-      <aside className="w-56 border-r border-white/5 bg-[#0A0A0A] flex flex-col shrink-0">
-        <div className="p-5 border-b border-white/5">
+      <aside className="w-56 border-r border-hair bg-ink-900 flex flex-col shrink-0">
+        <div className="p-5 border-b border-hair">
           <div className="font-display text-xl tracking-wider text-white">WAVE</div>
-          <div className="font-heading text-[9px] tracking-[0.3em] text-[#C9A84C] mt-0.5">DASHBOARD</div>
+          <div className="font-heading text-[9px] tracking-[0.3em] text-accent mt-0.5">DASHBOARD</div>
         </div>
         <nav className="flex-1 py-4">
           {NAV.map((item) => (
@@ -42,8 +45,8 @@ export default function DashboardClient({ adminNombre, clientes }: Props) {
               onClick={() => setSection(item.id)}
               className={`w-full flex items-center gap-3 px-5 py-3 text-left font-heading text-[10px] tracking-[0.15em] uppercase transition-all duration-200 ${
                 section === item.id
-                  ? 'text-[#C9A84C] bg-[rgba(201,168,76,0.08)] border-r-2 border-[#C9A84C]'
-                  : 'text-[#555] hover:text-white hover:bg-white/[0.02]'
+                  ? 'text-accent bg-[rgb(var(--accent)/0.08)] border-r-2 border-accent'
+                  : 'text-chalk-muted hover:text-white hover:bg-white/[0.02]'
               }`}
             >
               <item.icon size={14} />
@@ -51,9 +54,9 @@ export default function DashboardClient({ adminNombre, clientes }: Props) {
             </button>
           ))}
         </nav>
-        <div className="p-5 border-t border-white/5">
-          <div className="font-heading text-[10px] text-[#444] tracking-wider truncate">{adminNombre}</div>
-          <a href="/" className="flex items-center gap-2 mt-3 font-heading text-[9px] text-[#333] hover:text-[#C9A84C] tracking-widest transition-colors">
+        <div className="p-5 border-t border-hair">
+          <div className="font-heading text-[10px] text-chalk-faint tracking-wider truncate">{adminNombre}</div>
+          <a href="/" className="flex items-center gap-2 mt-3 font-heading text-[9px] text-chalk-faint hover:text-accent tracking-widest transition-colors">
             <LogOut size={11} /> SALIR
           </a>
         </div>
@@ -67,8 +70,8 @@ export default function DashboardClient({ adminNombre, clientes }: Props) {
             { label: 'VENTAS APROBADAS', value: String(totalVentas) },
             { label: 'CLIENTES ACTIVOS', value: String(clientesActivos) },
           ].map((m) => (
-            <div key={m.label} className="border border-white/5 bg-[#0A0A0A] p-5">
-              <div className="font-heading text-[9px] tracking-[0.2em] text-[#444] uppercase">{m.label}</div>
+            <div key={m.label} className="border border-hair bg-ink-900 p-5">
+              <div className="font-heading text-[9px] tracking-[0.2em] text-chalk-faint uppercase">{m.label}</div>
               <div className="font-display text-3xl text-white mt-1">{m.value}</div>
             </div>
           ))}
@@ -76,6 +79,12 @@ export default function DashboardClient({ adminNombre, clientes }: Props) {
 
         {section === 'ventas' && <VentasSection ventas={clientes} fmt={fmt} />}
         {section === 'clientes' && <ClientesSection clientes={ventasAprobadas} />}
+        {section === 'contador' && (
+          <ContadorSection
+            cuposVendidos={cuposConfig.cupos_vendidos}
+            totalCupos={cuposConfig.total_cupos}
+          />
+        )}
       </main>
     </div>
   );

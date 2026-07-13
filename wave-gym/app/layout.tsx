@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { LangProvider } from '@/lib/i18n/LangContext';
 
 export const metadata: Metadata = {
   title: 'Wave Project Gym — 1ª Preventa Oficial | Concón, Chile',
@@ -11,8 +12,15 @@ export const metadata: Metadata = {
     description: 'Solo 50 cupos. Precio especial de lanzamiento. Asegura el tuyo.',
     url: 'https://waveprojectgym.cl',
     siteName: 'Wave Project Gym',
+    images: [{ url: '/wave-logo.png', width: 1254, height: 1254, alt: 'Wave Project Gym' }],
     locale: 'es_CL',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Wave Project Gym — 1ª Preventa Oficial',
+    description: 'Solo 50 cupos. Precio especial de lanzamiento. Asegura el tuyo.',
+    images: ['/wave-logo.png'],
   },
 };
 
@@ -23,8 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-[#0A0A0A] text-white antialiased">
-        {children}
+      <body className="bg-ink-950 text-white antialiased">
+        <LangProvider>
+          {children}
+        </LangProvider>
       </body>
     </html>
   );
