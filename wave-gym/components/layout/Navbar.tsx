@@ -107,6 +107,7 @@ export default function Navbar() {
       setScrolled(window.scrollY > 40);
       let active = '';
       for (const { href } of navLinks) {
+        if (!href.startsWith('#')) continue;
         const el = document.querySelector(href);
         if (el && el.getBoundingClientRect().top <= 100) active = href;
       }
