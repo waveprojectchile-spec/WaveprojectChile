@@ -21,7 +21,7 @@ const fmt = (n: number) =>
 export default function PlansSection() {
   const { d } = useLang();
   const { cuposDisponibles, totalCupos, porcentaje } = useRealtimeCupos();
-  const agotado = cuposDisponibles <= 0;
+  const agotado = true; // PREVENTA 2 CERRADA
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const planNames = [d.plans.names.mensual, d.plans.names.trimestral, d.plans.names.semestral, d.plans.names.anual];
