@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { Instagram, Facebook, Phone, Mail, MapPin, ShoppingCart } from 'lucide-react';
+import { Instagram, Facebook, Mail, MapPin, ShoppingCart } from 'lucide-react';
 import { useLang } from '@/lib/i18n/LangContext';
 
 export default function Footer() {
@@ -68,7 +68,6 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <h4 className="font-heading font-black text-chalk-faint text-[9px] tracking-[0.3em] uppercase mb-1">{d.footer.contact}</h4>
             {[
-              { icon: Phone, text: '+569 942 379 197', href: 'tel:+56942379197' },
               { icon: Mail,  text: 'waveprojectchile@gmail.com', href: 'mailto:waveprojectchile@gmail.com' },
               { icon: MapPin, text: 'Calle 6 235, Concón, Chile' },
             ].map(({ icon: Icon, text, href }) => (
